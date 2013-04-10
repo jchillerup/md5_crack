@@ -52,6 +52,8 @@ char * md5(char * input)
 	int input_length = strlen(input);
 	char * pad_ptr = m;
 	
+	int i = 0;
+
 	// We don't want inputs larger than what fits in the first three message words
 	// (we can use strlen because there's no chance of 0x00s just yet.
 	if (input_length > 3*sizeof(uint32_t)) {
@@ -62,14 +64,14 @@ char * md5(char * input)
 	// Do the padding. 
 	memcpy(m, input, input_length);
 	pad_ptr += input_length;
-	*pad_ptr = (char) 128; // 0001 0000, but we're little endian
+	*pad_ptr = (char) 0x80000000; // 0001 0000, but we're little endian
 	
-	for (int i = 0; i<64; i++) {
+	for (i = 0; i<64; i++) {
 		printf("%.2x ", m[i]);
 	}
 	
 	// Calculate the hash value
-	for (int i = 0; i<64; i++) {
+	for (i = 0; i<64; i++) {
 		md5_round(&a, &b, &c, &d, (m+m_idx[i]), i);
 	}
 	
