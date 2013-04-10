@@ -1,0 +1,25 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/md5.c">
+    <Files>
+      <File FileName="md5_attack/main.c" Line="7" Column="30" />
+      <File FileName="md5_attack/md5.h" Line="3" Column="84" />
+      <File FileName="md5_attack/md5.c" Line="9" Column="36" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="md5_attack" expanded="True">
+            <Node name="md5.c" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/home/jens/Dropbox/Documents/Lektier/Master/projects/md5_attack/md5_attack/md5.c" line="50" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
