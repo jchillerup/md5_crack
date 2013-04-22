@@ -7,8 +7,6 @@ int main(int argc, char ** argv) {
 	char * input = "ABCDABCDABCD";
 	
 	hash = md5(input);
-	//scanf("%d");
-	for(;;){}
 
 	return(EXIT_SUCCESS);
 }

@@ -114,7 +114,7 @@ char * md5(char * input)
 	// Calculate the hash value
 	for (i = 0; i<64; i++) {
 		md5_round(&a, &b, &c, &d, m, i);
-		printf("md5_round(%.08x, %.08x, %.08x, %.08x, %.08x, %d)\n", a, b, c, d, m, i);
+		//printf("md5_round(%.08x, %.08x, %.08x, %.08x, %.08x, %d)\n", a, b, c, d, m, i);
 	}
 	
 	a += h0;
