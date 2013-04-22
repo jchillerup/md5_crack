@@ -17,8 +17,8 @@
 # define SWAP(n) (n)
 #endif
 
-#define F(b, c, d) (((*b) & (*c)) | ((~(*b)) & (*c)))
-#define G(b, c, d) (((*b) & (*d)) | ((*c) & (!(*d))))
+#define F(b, c, d) (((*b) & (*c)) | ((~(*b)) & (*d)))
+#define G(b, c, d) (((*b) & (*d)) | ((*c) & (~(*d))))
 #define H(b, c, d) ((*b) ^ (*c) ^ (*d))
 #define I(b, c, d) ((*c) ^ ((*b) | (~(*d))))
 
@@ -68,8 +68,8 @@ void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, 
 		f_val = I(b, c, d);
 	}
 
-	//printf("Round %d, index %d, message %.08x\n", r, m_idx[r], m[m_idx[r]]);
-
+	//printf("Round %d, message %.08x, f_val %.08x, s %d, k %.08x\n", r, m[m_idx[r]], f_val, s[r], k[r]);
+	//printf("b = %.08x, c = %.08x, d = %.08x\n", *b, *c, *d);
 	new_b = *a + f_val + k[r] + m[m_idx[r]];
 	ROTATE_LEFT(new_b, s[r]);
 	
