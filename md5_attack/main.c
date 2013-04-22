@@ -4,10 +4,10 @@
 
 int main(int argc, char ** argv) {
 	char * hash = (char*) malloc(16);
-	char * input = "AAAAAAAAAAAA";
+	char * input = "ABCDABCDABCD";
 	
 	hash = md5(input);
-	scanf("%d");
+	//scanf("%d");
 
 	return(EXIT_SUCCESS);
 }

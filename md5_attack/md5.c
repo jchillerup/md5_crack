@@ -52,7 +52,7 @@ const uint32_t h3 = 0x10325476;
 
 /* This array contains the bytes used to pad the buffer to the next
    64-byte boundary.  (RFC 1321, 3.1: Step 1)  */
-static const unsigned char fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
+static const uint32_t fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
 
 void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, int r) {
 	uint32_t f_val;
@@ -68,14 +68,16 @@ void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, 
 		f_val = I(b, c, d);
 	}
 
-	new_b = *a + f_val + m[m_idx[r]];
+	//printf("Round %d, index %d, message %.08x\n", r, m_idx[r], m[m_idx[r]]);
+
+	new_b = *a + f_val + k[r] + m[m_idx[r]];
 	ROTATE_LEFT(new_b, s[r]);
 	
 	*a = *d;
 	*d = *c;
 	*c = *b;
 
-	*b = new_b ^ (*b);
+	*b = new_b + (*b);
 	
 }
 
@@ -104,21 +106,15 @@ char * md5(char * input)
 	
 	// Do the padding. 
 	memcpy(m, input, input_length);
-	memcpy(&m[input_length], fillbuf, 64-input_length);
+	memcpy(&m[input_length / sizeof(uint32_t)], fillbuf, 64-input_length);
 	
-	// Set the length of the plaintext
-	m[56] = input_length*8;
-
-	/*
-	for (i = 0; i<64; i++) {
-		printf("%.2x ", m[i]);
-	} 
-	*/
-
+	// Add the length of the plaintext in bits
+	m[14] = input_length*8;
+		
 	// Calculate the hash value
 	for (i = 0; i<64; i++) {
+		md5_round(&a, &b, &c, &d, m, i);
 		printf("md5_round(%.08x, %.08x, %.08x, %.08x, %.08x, %d)\n", a, b, c, d, m, i);
-		//md5_round(&a, &b, &c, &d, (m+m_idx[i]), i);
 	}
 	
 	a += h0;
