@@ -3,10 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define F(b, c, d) (((b) & (c)) | ((~b) & (c)))
-#define G(b, c, d) (((b) & (d)) | ((c) & (!d)))
-#define H(b, c, d) ((b) ^ (c) ^ (d))
-#define I(b, c, d) ((c) ^ ((b) | (~d)))
+#ifdef _LIBC
+# include <endian.h>
+# if __BYTE_ORDER == __BIG_ENDIAN
+#  define WORDS_BIGENDIAN 1
+# endif
+#endif
+
+#ifdef WORDS_BIGENDIAN
+# define SWAP(n)							\
+    (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
+#else
+# define SWAP(n) (n)
+#endif
+
+#define F(b, c, d) (((*b) & (*c)) | ((~(*b)) & (*c)))
+#define G(b, c, d) (((*b) & (*d)) | ((*c) & (!(*d))))
+#define H(b, c, d) ((*b) ^ (*c) ^ (*d))
+#define I(b, c, d) ((*c) ^ ((*b) | (~(*d))))
+
+#define ROTATE_LEFT(w, s) (w = (w << s) | (w >> (32 - s)))
 
 short s[] = { 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
 			  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
@@ -33,11 +49,37 @@ const uint32_t h1 = 0xefcdab89;
 const uint32_t h2 = 0x98badcfe;
 const uint32_t h3 = 0x10325476;
 
-void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, char* m, int r) {
+
+/* This array contains the bytes used to pad the buffer to the next
+   64-byte boundary.  (RFC 1321, 3.1: Step 1)  */
+static const unsigned char fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
+
+void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, int r) {
+	uint32_t f_val;
+	uint32_t new_b;
+
+	if (r < 16) {
+		f_val = F(b, c, d);
+	} else if (r < 32) {
+		f_val = G(b, c, d);
+	} else if (r < 48) {
+		f_val = H(b, c, d);
+	} else {
+		f_val = I(b, c, d);
+	}
+
+	new_b = *a + f_val + m[m_idx[r]];
+	ROTATE_LEFT(new_b, s[r]);
+	
+	*a = *d;
+	*d = *c;
+	*c = *b;
+
+	*b = new_b ^ (*b);
 	
 }
 
-void md5_round_backwards(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, char* m, int r) {
+void md5_round_backwards(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, unsigned char* m, int r) {
 	
 }
 
@@ -48,9 +90,8 @@ char * md5(char * input)
 	uint32_t c = h2;
 	uint32_t d = h3;
 
-	char * m = (char*) calloc(4, 16);
+	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
 	int input_length = strlen(input);
-	char * pad_ptr = m;
 	
 	int i = 0;
 
@@ -63,16 +104,29 @@ char * md5(char * input)
 	
 	// Do the padding. 
 	memcpy(m, input, input_length);
-	pad_ptr += input_length;
-	*pad_ptr = (char) 0x80000000; // 0001 0000, but we're little endian
+	memcpy(&m[input_length], fillbuf, 64-input_length);
 	
+	// Set the length of the plaintext
+	m[56] = input_length*8;
+
+	/*
 	for (i = 0; i<64; i++) {
 		printf("%.2x ", m[i]);
-	}
-	
+	} 
+	*/
+
 	// Calculate the hash value
 	for (i = 0; i<64; i++) {
-		md5_round(&a, &b, &c, &d, (m+m_idx[i]), i);
+		printf("md5_round(%.08x, %.08x, %.08x, %.08x, %.08x, %d)\n", a, b, c, d, m, i);
+		//md5_round(&a, &b, &c, &d, (m+m_idx[i]), i);
 	}
 	
+	a += h0;
+	b += h1;
+	c += h2;
+	d += h3;
+	
+	printf("%.08x %.08x %.08x %.08x\n", a, b, c, d);
+
+	// Result 02737e4e 8c87d746 6b623c1f 844fdd71
 }
