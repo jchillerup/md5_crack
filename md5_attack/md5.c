@@ -137,7 +137,7 @@ void md5(char * input)
 	*c += h2;
 	*d += h3;
 	
-	printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
+	// printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
 
 	// Result 02737e4e 8c87d746 6b623c1f 844fdd71
 }
