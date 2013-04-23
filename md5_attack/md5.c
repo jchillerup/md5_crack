@@ -17,10 +17,10 @@
 # define SWAP(n) (n)
 #endif
 
-#define F(b, c, d) (((*b) & (*c)) | ((~(*b)) & (*d)))
-#define G(b, c, d) (((*b) & (*d)) | ((*c) & (~(*d))))
-#define H(b, c, d) ((*b) ^ (*c) ^ (*d))
-#define I(b, c, d) ((*c) ^ ((*b) | (~(*d))))
+#define F(b, c, d) (((**b) & (**c)) | ((~(**b)) & (**d)))
+#define G(b, c, d) (((**b) & (**d)) | ((**c) & (~(**d))))
+#define H(b, c, d) ((**b) ^ (**c) ^ (**d))
+#define I(b, c, d) ((**c) ^ ((**b) | (~(**d))))
 
 #define ROTATE_LEFT(w, s) (w = (w << s) | (w >> (32 - s)))
 
@@ -54,7 +54,7 @@ const uint32_t h3 = 0x10325476;
    64-byte boundary.  (RFC 1321, 3.1: Step 1)  */
 static const uint32_t fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
 
-void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, int r) {
+void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t* m, int r) {
 	uint32_t f_val;
 	uint32_t new_b;
 	uint32_t* old_a_p;
@@ -71,7 +71,7 @@ void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, 
 
 	//printf("Round %d, message %.08x, f_val %.08x, s %d, k %.08x\n", r, m[m_idx[r]], f_val, s[r], k[r]);
 	//printf("b = %.08x, c = %.08x, d = %.08x\n", *b, *c, *d);
-	new_b = *a + f_val + k[r] + m[m_idx[r]];
+	new_b = **a + f_val + k[r] + m[m_idx[r]];
 	ROTATE_LEFT(new_b, s[r]);
 	
 /*  WORKS
@@ -82,13 +82,13 @@ void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, 
 	*b = new_b + *b;
 */
 
-	old_a_p = a;
-	a = d;
-	d = c;
-	c = b;
-	b = old_a_p;
+	old_a_p = *a;
+	*a = *d;
+	*d = *c;
+	*c = *b;
+	*b = old_a_p;
 	
-	*b = new_b + (*c);
+	**b = new_b + (**c);
 }
 
 void md5_round_backwards(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, unsigned char* m, int r) {
@@ -128,7 +128,7 @@ void md5(char * input)
 		
 	// Calculate the hash value
 	for (i = 0; i<64; i++) {
-		md5_round(a, b, c, d, m, i);
+		md5_round(&a, &b, &c, &d, m, i);
 		//printf("md5_round(%.08x, %.08x, %.08x, %.08x, %.08x, %d)\n", a, b, c, d, m, i);
 	}
 	
