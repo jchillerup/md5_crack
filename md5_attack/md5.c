@@ -83,18 +83,29 @@ void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t*
 
 void md5_round_backwards(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, unsigned char* m, int r) {
 	uint32_t f_val;
+	uint32_t* old_b_p;
+	uint32_t new_a;
+	
+	old_b_p = *b;
+	*b = *c;
+	*c = *d;
+	*d = *a;
+	*a = old_b_p;
 	
 	if (r < 16) {
-		f_val = F(c, d, a);
+		f_val = F(b, c, d);
 	} else if (r < 32) {
-		f_val = G(c, d, a);
+		f_val = G(b, c, d);
 	} else if (r < 48) {
-		f_val = H(c, d, a);
+		f_val = H(b, c, d);
 	} else {
-		f_val = I(c, d, a);
+		f_val = I(b, c, d);
 	}
 	
+	new_a = **b - **c;
+	ROTATE_LEFT(new_a, 32-s[r]);
 	
+	**a = new_a - f_val - k[r] - m[m_idx[r]];
 }
 
 void md5(char * input)
