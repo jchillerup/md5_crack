@@ -69,18 +69,8 @@ void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t*
 		f_val = I(b, c, d);
 	}
 
-	//printf("Round %d, message %.08x, f_val %.08x, s %d, k %.08x\n", r, m[m_idx[r]], f_val, s[r], k[r]);
-	//printf("b = %.08x, c = %.08x, d = %.08x\n", *b, *c, *d);
 	new_b = **a + f_val + k[r] + m[m_idx[r]];
 	ROTATE_LEFT(new_b, s[r]);
-	
-/*  WORKS
-	
-	*a = *d;
-	*d = *c;
-	*c = *b;
-	*b = new_b + *b;
-*/
 
 	old_a_p = *a;
 	*a = *d;
@@ -92,6 +82,18 @@ void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t*
 }
 
 void md5_round_backwards(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, unsigned char* m, int r) {
+	uint32_t f_val;
+	
+	if (r < 16) {
+		f_val = F(c, d, a);
+	} else if (r < 32) {
+		f_val = G(c, d, a);
+	} else if (r < 48) {
+		f_val = H(c, d, a);
+	} else {
+		f_val = I(c, d, a);
+	}
+	
 	
 }
 
