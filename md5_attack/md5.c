@@ -57,7 +57,8 @@ static const uint32_t fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
 void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, int r) {
 	uint32_t f_val;
 	uint32_t new_b;
-
+	uint32_t* old_a_p;
+	
 	if (r < 16) {
 		f_val = F(b, c, d);
 	} else if (r < 32) {
@@ -73,24 +74,38 @@ void md5_round(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, uint32_t* m, 
 	new_b = *a + f_val + k[r] + m[m_idx[r]];
 	ROTATE_LEFT(new_b, s[r]);
 	
+/*  WORKS
+	
 	*a = *d;
 	*d = *c;
 	*c = *b;
+	*b = new_b + *b;
+*/
 
-	*b = new_b + (*b);
+	old_a_p = a;
+	a = d;
+	d = c;
+	c = b;
+	b = old_a_p;
 	
+	*b = new_b + (*c);
 }
 
 void md5_round_backwards(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, unsigned char* m, int r) {
 	
 }
 
-char * md5(char * input)
+void md5(char * input)
 {
-	uint32_t a = h0;
-	uint32_t b = h1;
-	uint32_t c = h2;
-	uint32_t d = h3;
+	uint32_t *a = (uint32_t*) malloc(sizeof(uint32_t));
+	uint32_t *b = (uint32_t*) malloc(sizeof(uint32_t));
+	uint32_t *c = (uint32_t*) malloc(sizeof(uint32_t));
+	uint32_t *d = (uint32_t*) malloc(sizeof(uint32_t));
+	
+	*a = h0;
+	*b = h1;
+	*c = h2;
+	*d = h3;
 
 	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
 	int input_length = strlen(input);
@@ -113,16 +128,16 @@ char * md5(char * input)
 		
 	// Calculate the hash value
 	for (i = 0; i<64; i++) {
-		md5_round(&a, &b, &c, &d, m, i);
+		md5_round(a, b, c, d, m, i);
 		//printf("md5_round(%.08x, %.08x, %.08x, %.08x, %.08x, %d)\n", a, b, c, d, m, i);
 	}
 	
-	a += h0;
-	b += h1;
-	c += h2;
-	d += h3;
+	*a += h0;
+	*b += h1;
+	*c += h2;
+	*d += h3;
 	
-	printf("%.08x %.08x %.08x %.08x\n", a, b, c, d);
+	printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
 
 	// Result 02737e4e 8c87d746 6b623c1f 844fdd71
 }
