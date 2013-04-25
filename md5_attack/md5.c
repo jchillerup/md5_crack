@@ -81,7 +81,7 @@ void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t*
 	**b = new_b + (**c);
 }
 
-void md5_round_backwards(uint32_t* a, uint32_t* b, uint32_t* c, uint32_t* d, unsigned char* m, int r) {
+void md5_round_backwards(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t* m, int r) {
 	uint32_t f_val;
 	uint32_t* old_b_p;
 	uint32_t new_a;
@@ -152,5 +152,16 @@ void md5(char * input)
 	
 	// printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
 
+	// Reverse
+	*a -= h0;
+	*b -= h1;
+	*c -= h2;
+	*d -= h3;
+	
+	for (i=63; i>=0; i--) {
+		md5_round_backwards(&a, &b, &c, &d, m, i);
+	}
+	
+	printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
 	// Result 02737e4e 8c87d746 6b623c1f 844fdd71
 }
