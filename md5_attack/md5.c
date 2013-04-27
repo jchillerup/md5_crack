@@ -22,7 +22,8 @@
 #define H(b, c, d) ((**b) ^ (**c) ^ (**d))
 #define I(b, c, d) ((**c) ^ ((**b) | (~(**d))))
 
-#define ROTATE_LEFT(w, s) (w = (w << s) | (w >> (32 - s)))
+#define ROTATE_LEFT(w, s)  (w = (w << s) | (w >> (32 - s)))
+#define ROTATE_RIGHT(w, s) (w = (w >> s) | (w << (32 - s)))
 
 short s[] = { 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
 			  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
@@ -55,23 +56,24 @@ const uint32_t h3 = 0x10325476;
 static const uint32_t fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
 
 void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t* m, int r) {
+	
 	uint32_t f_val;
 	uint32_t new_b;
 	uint32_t* old_a_p;
 	
-	if (r < 16) {
-		f_val = F(b, c, d);
-	} else if (r < 32) {
-		f_val = G(b, c, d);
-	} else if (r < 48) {
-		f_val = H(b, c, d);
-	} else {
-		f_val = I(b, c, d);
-	}
-
-	new_b = **a + f_val + k[r] + m[m_idx[r]];
+	if      (r < 16) f_val = F(b, c, d);
+	else if (r < 32) f_val = G(b, c, d);
+	else if (r < 48) f_val = H(b, c, d);
+	else             f_val = I(b, c, d);
+	
+	new_b  = **a; 
+	
+	new_b += f_val;
+	new_b += k[r];
+	new_b += m[m_idx[r]];
+	
 	ROTATE_LEFT(new_b, s[r]);
-
+	
 	old_a_p = *a;
 	*a = *d;
 	*d = *c;
@@ -83,8 +85,8 @@ void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t*
 
 void md5_round_backwards(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t* m, int r) {
 	uint32_t f_val;
-	uint32_t* old_b_p;
 	uint32_t new_a;
+	uint32_t* old_b_p;
 	
 	old_b_p = *b;
 	*b = *c;
@@ -92,20 +94,19 @@ void md5_round_backwards(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d,
 	*d = *a;
 	*a = old_b_p;
 	
-	if (r < 16) {
-		f_val = F(b, c, d);
-	} else if (r < 32) {
-		f_val = G(b, c, d);
-	} else if (r < 48) {
-		f_val = H(b, c, d);
-	} else {
-		f_val = I(b, c, d);
-	}
+	if      (r < 16) f_val = F(b, c, d);
+	else if (r < 32) f_val = G(b, c, d);
+	else if (r < 48) f_val = H(b, c, d);
+	else             f_val = I(b, c, d);
 	
-	new_a = **b - **c;
-	ROTATE_LEFT(new_a, 32-s[r]);
+	new_a = **a - **b;
+	ROTATE_RIGHT(new_a, s[r]);
 	
-	**a = new_a - f_val - k[r] - m[m_idx[r]];
+	new_a -= f_val;
+	new_a -= k[r];
+	new_a -= m[m_idx[r]];
+	
+	**a = new_a;
 }
 
 void md5(char * input)
@@ -127,7 +128,7 @@ void md5(char * input)
 
 	// We don't want inputs larger than what fits in the first three message words
 	// (we can use strlen because there's no chance of 0x00s just yet.
-	if (input_length > 3*sizeof(uint32_t)) {
+	if (input_length > 3 * sizeof(uint32_t)) {
 		fprintf(stderr, "Password candidate too long.");
 		exit(255);
 	}
@@ -138,7 +139,7 @@ void md5(char * input)
 	
 	// Add the length of the plaintext in bits
 	m[14] = input_length*8;
-		
+	
 	// Calculate the hash value
 	for (i = 0; i<64; i++) {
 		md5_round(&a, &b, &c, &d, m, i);
@@ -150,18 +151,5 @@ void md5(char * input)
 	*c += h2;
 	*d += h3;
 	
-	// printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
-
-	// Reverse
-	*a -= h0;
-	*b -= h1;
-	*c -= h2;
-	*d -= h3;
-	
-	for (i=63; i>=0; i--) {
-		md5_round_backwards(&a, &b, &c, &d, m, i);
-	}
-	
 	printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
-	// Result 02737e4e 8c87d746 6b623c1f 844fdd71
 }

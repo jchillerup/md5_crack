@@ -7,7 +7,7 @@ int main(int argc, char ** argv) {
 	char * input;
 	input = "ABCDABCDABCD";
 	
-	for (i = 0; i<10000000; i++) {
+	for (i = 0; i<1; i++) {
 		md5(input);
 	}
 	return(EXIT_SUCCESS);
