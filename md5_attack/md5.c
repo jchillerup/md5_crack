@@ -17,6 +17,8 @@
 # define SWAP(n) (n)
 #endif
 
+#define DEBUG
+
 #define F(b, c, d) (((**b) & (**c)) | ((~(**b)) & (**d)))
 #define G(b, c, d) (((**b) & (**d)) | ((**c) & (~(**d))))
 #define H(b, c, d) ((**b) ^ (**c) ^ (**d))
@@ -116,15 +118,14 @@ void md5(char * input)
 	uint32_t *c = (uint32_t*) malloc(sizeof(uint32_t));
 	uint32_t *d = (uint32_t*) malloc(sizeof(uint32_t));
 	
+	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
+	int input_length = strlen(input);
+	int i;
+
 	*a = h0;
 	*b = h1;
 	*c = h2;
 	*d = h3;
-
-	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
-	int input_length = strlen(input);
-	
-	int i = 0;
 
 	// We don't want inputs larger than what fits in the first three message words
 	// (we can use strlen because there's no chance of 0x00s just yet.
@@ -133,18 +134,27 @@ void md5(char * input)
 		exit(255);
 	}
 	
-	// Do the padding. 
-	memcpy(m, input, input_length);
-	memcpy(&m[input_length / sizeof(uint32_t)], fillbuf, 64-input_length);
+	/* Do the padding. We need to consider m as a char pointer in order to properly
+	 * point out the right address for the padding to start. */
+	memcpy(m,                            input,      input_length);
+	memcpy((char *) m + input_length,    fillbuf,    64 - input_length);
 	
 	// Add the length of the plaintext in bits
-	m[14] = input_length*8;
+	m[14] = input_length * 8;
 	
 	// Calculate the hash value
 	for (i = 0; i<64; i++) {
 		md5_round(&a, &b, &c, &d, m, i);
 	}
 	
+#ifdef DEBUG
+	for (i = 0; i<16; i++) {
+		printf("%.2x ", m[i]);
+	}
+	printf("\n");
+#endif
+
+
 	*a += h0;
 	*b += h1;
 	*c += h2;
