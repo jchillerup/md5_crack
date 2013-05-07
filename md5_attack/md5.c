@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include "md5.h"
 
 #ifdef _LIBC
 # include <endian.h>
@@ -47,11 +48,11 @@ int m_idx[] = {	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 				5, 8, 11, 14, 1, 4, 7, 10, 13, 0, 3, 6, 9, 12, 15, 2, 
 				0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9 };
 
+
 const uint32_t h0 = 0x67452301;
 const uint32_t h1 = 0xefcdab89;
 const uint32_t h2 = 0x98badcfe;
 const uint32_t h3 = 0x10325476;
-
 
 /* This array contains the bytes used to pad the buffer to the next
    64-byte boundary.  (RFC 1321, 3.1: Step 1)  */
@@ -111,7 +112,7 @@ void md5_round_backwards(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d,
 	**a = new_a;
 }
 
-void md5(char * input)
+md5_state md5(char * input)
 {
 	uint32_t *a = (uint32_t*) malloc(sizeof(uint32_t));
 	uint32_t *b = (uint32_t*) malloc(sizeof(uint32_t));
@@ -121,6 +122,7 @@ void md5(char * input)
 	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
 	int input_length = strlen(input);
 	int i;
+	md5_state ret;
 
 	*a = h0;
 	*b = h1;
@@ -160,5 +162,57 @@ void md5(char * input)
 	*c += h2;
 	*d += h3;
 	
-	printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
+	ret.a = a;
+	ret.b = b;
+	ret.c = c;
+	ret.d = d;
+
+	return ret;
+}
+
+md5_state md5_truncated(char * input, int stop_after_round)
+{
+	uint32_t *a = (uint32_t*) malloc(sizeof(uint32_t));
+	uint32_t *b = (uint32_t*) malloc(sizeof(uint32_t));
+	uint32_t *c = (uint32_t*) malloc(sizeof(uint32_t));
+	uint32_t *d = (uint32_t*) malloc(sizeof(uint32_t));
+	
+	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
+	int input_length = strlen(input);
+	int i;
+	md5_state retval;
+
+	*a = h0;
+	*b = h1;
+	*c = h2;
+	*d = h3;
+
+	// We don't want inputs larger than what fits in the first three message words
+	// (we can use strlen because there's no chance of 0x00s just yet.
+	if (input_length > 3 * sizeof(uint32_t)) {
+		fprintf(stderr, "Password candidate too long.");
+		exit(255);
+	}
+	
+	/* Do the padding. We need to consider m as a char pointer in order to properly
+	 * point out the right address for the padding to start. */
+	memcpy(m,                            input,      input_length);
+	memcpy((char *) m + input_length,    fillbuf,    64 - input_length);
+	
+	// Add the length of the plaintext in bits
+	m[14] = input_length * 8;
+	
+	// Calculate the hash value
+	for (i = 0; i <= stop_after_round; i++) {
+		md5_round(&a, &b, &c, &d, m, i);
+	}
+
+	retval.a = a;
+	retval.b = b;
+	retval.c = c;
+	retval.d = d;
+
+	free(m);
+
+	return retval;
 }

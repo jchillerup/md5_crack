@@ -94,7 +94,7 @@ int main(int argc, char ** argv) {
 	test_target = md5(input);
 	
 	printf("Searching for:\n");
-	printf("%.8x %.8x %.8x %.8x\n", *test_target.a, *test_target.b, *test_target.c, *test_target.d); 
+	printf("%.8x %.8x %.8x %.8x\", *test_target.a, *test_target.b, *test_target.c, *test_target.d); 
 	
 	// TODO: Make the output of the initial MD5 call act as 
 	//       the input to the attack.
