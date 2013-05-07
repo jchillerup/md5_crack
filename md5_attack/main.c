@@ -25,6 +25,9 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 	m[1] = 0x00000000;
 	m[2] = 0x00000000;
 
+	/* Define the length of the message. TODO: fix */
+	m[14] = 4*8;
+
 	/* Subtract the h0..3 */
 	*ap -= h0;
 	*bp -= h1;
@@ -35,10 +38,14 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 	/* (note that m[0] is not of any importance during these calculations) */
 	for (i = 63; i > 48; i--) {
 		md5_round_backwards(&ap, &bp, &cp, &dp, m, i);
+		printf("%d: %.8x %.8x %.8x %.8x\n", i, *ap, *bp, *cp, *dp); 
 	}
 
+	printf("Value at pivot: \n");
+	printf("%.8x %.8x %.8x %.8x\n", *ap, *bp, *cp, *dp); 
+
 	/* At this point, we're looking for a value that after round 48 
-	* has state *ap *bp *cp *dp. */
+	 * has state *ap *bp *cp *dp. */
 
 	/* Iterate over all m0s */
 	/* TODO: before looping through any of the inner loops, do a test with subsequent bytes = 0x00 */
@@ -61,12 +68,14 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 
 					/* printf("%.8x %.8x %.8x\n", m[0], m[1], m[2]); */
 
-					/* printf("%.8x %.8x %.8x %.8x\n", *(forward_result.a), *(forward_result.b), *(forward_result.c), *(forward_result.d)); */
+					if (b1 == 0x20 && b2 == 0x20 && b3 == 0x20 && b4 == 0x20) 
+						printf("%.8x %.8x %.8x %.8x\n", *(forward_result.a), *(forward_result.b), *(forward_result.c), *(forward_result.d)); 
 
 					if (*(forward_result.a) == *ap &&
 						*(forward_result.b) == *bp &&
 						*(forward_result.c) == *cp &&
 						*(forward_result.d) == *dp) {
+							printf("found");
 							return TRUE;
 					}
 
@@ -90,7 +99,7 @@ int main(int argc, char ** argv) {
 	char * input;
 	int ret = FALSE;
 
-	input = "0123";
+	input = "    ";
 	test_target = md5(input);
 	
 	printf("Searching for:\n");
