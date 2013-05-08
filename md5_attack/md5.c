@@ -18,7 +18,6 @@
 # define SWAP(n) (n)
 #endif
 
-#define DEBUG
 
 #define F(b, c, d) (((**b) & (**c)) | ((~(**b)) & (**d)))
 #define G(b, c, d) (((**b) & (**d)) | ((**c) & (~(**d))))
@@ -170,15 +169,13 @@ md5_state md5(char * input)
 	return ret;
 }
 
-md5_state md5_truncated(char * input, int stop_after_round)
+md5_state md5_truncated(uint32_t * m, int stop_after_round)
 {
 	uint32_t *a = (uint32_t*) malloc(sizeof(uint32_t));
 	uint32_t *b = (uint32_t*) malloc(sizeof(uint32_t));
 	uint32_t *c = (uint32_t*) malloc(sizeof(uint32_t));
 	uint32_t *d = (uint32_t*) malloc(sizeof(uint32_t));
 	
-	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
-	int input_length = strlen(input);
 	int i;
 	md5_state retval;
 
@@ -186,21 +183,6 @@ md5_state md5_truncated(char * input, int stop_after_round)
 	*b = h1;
 	*c = h2;
 	*d = h3;
-
-	// We don't want inputs larger than what fits in the first three message words
-	// (we can use strlen because there's no chance of 0x00s just yet.
-	if (input_length > 3 * sizeof(uint32_t)) {
-		fprintf(stderr, "Password candidate too long.");
-		exit(255);
-	}
-	
-	/* Do the padding. We need to consider m as a char pointer in order to properly
-	 * point out the right address for the padding to start. */
-	memcpy(m,                            input,      input_length);
-	memcpy((char *) m + input_length,    fillbuf,    64 - input_length);
-	
-	// Add the length of the plaintext in bits
-	m[14] = input_length * 8;
 	
 #ifdef DEBUG
 	printf("Truncated MD5 message: ");
