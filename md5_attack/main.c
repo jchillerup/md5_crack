@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "md5.h"
+#include <time.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -49,7 +50,7 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	/* TODO: before looping through any of the inner loops, do a test with subsequent bytes = 0x00 */
 	for (b1 = 0x20; b1 < 0x7f; b1++) {
 		float percentage_done = 100* ((float) b1-0x20) / 0x7f;
-		printf("%.2f\n", percentage_done );
+		printf("Percentage through the whole space: %.2f\r", percentage_done );
 
 		for (b2 = 0x20; b2 < 0x7f; b2++) {
 
@@ -59,7 +60,7 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 					md5_state forward_result;
 
 					/* Establish current m0 */
-					m[0] = b1 << 24 | b2 << 16 | b3 << 8 | b4;
+					m[0] = b4 << 24 | b3 << 16 | b2 << 8 | b1;
 
 					/* Calculate forward until after round 48 */
 					forward_result = md5_truncated(m, 48);
@@ -88,18 +89,26 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 int main(int argc, char ** argv) {
 	md5_state test_target;
+	clock_t cl;
 	int i = 0;
 	char * input;
 	int ret = FALSE;
 
-	input = "7c!B";
+	input = "AA  ";
 	test_target = md5(input);
 	
 	// TODO: Make the output of the initial MD5 call act as 
 	//       the input to the attack.
+	cl = clock();
 	ret = attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
+	cl = clock() - cl;
 
-	printf("%d", ret);
+	if (ret == TRUE) {
+		printf("\nPreimage found ");
+	} else {
+		printf("\nPreimage not ");
+	}
+	printf("after %f seconds.", ((float)cl)/CLOCKS_PER_SEC);
 	scanf("%d", &input);
 
 	return(EXIT_SUCCESS);
