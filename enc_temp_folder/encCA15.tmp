@@ -13,10 +13,9 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	uint8_t b1, b2, b3, b4;
 	int i;
 	
-#ifdef DEBUG
+
 	printf("Attack called with the following parameters:\n");
 	printf("%.8x %.8x %.8x %.8x\n", a, b, c, d); 
-#endif
 
 	ap = &a;
 	bp = &b;
@@ -52,7 +51,7 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	/* TODO: before looping through any of the inner loops, do a test with subsequent bytes = 0x00 */
 	for (b1 = 0x20; b1 < 0x7f; b1++) {
 		float percentage_done = 100* ((float) b1-0x20) / 0x7f;
-		printf("  Percentage through the whole space: %.2f\r", percentage_done );
+		printf("Percentage through the whole space: %.2f\r", percentage_done );
 
 		for (b2 = 0x20; b2 < 0x7f; b2++) {
 
@@ -97,7 +96,7 @@ int  naive_search(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 
 	for (b1 = 0x20; b1 < 0x7f; b1++) {
 		float percentage_done = 100* ((float) b1-0x20) / 0x7f;
-		printf("  Percentage through the whole space: %.2f\r", percentage_done );
+		printf("Percentage through the whole space: %.2f\r", percentage_done );
 
 		for (b2 = 0x20; b2 < 0x7f; b2++) {
 
@@ -130,7 +129,6 @@ int  naive_search(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 		}
 	}
 
-	free(m);
 	return FALSE;
 }
 
@@ -152,9 +150,9 @@ int main(int argc, char ** argv) {
 	cl = clock() - cl;
 
 	if (ret == TRUE) {
-		printf("\n  Preimage found ");
+		printf("\nPreimage found ");
 	} else {
-		printf("\n  Preimage not ");
+		printf("\nPreimage not ");
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
@@ -165,9 +163,9 @@ int main(int argc, char ** argv) {
 	cl = clock() - cl;
 	
 	if (ret == TRUE) {
-		printf("\n  Preimage found ");
+		printf("\nPreimage found ");
 	} else {
-		printf("\n  Preimage not ");
+		printf("\nPreimage not ");
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
