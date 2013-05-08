@@ -9,7 +9,6 @@
 int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	uint32_t *ap, *bp, *cp, *dp;
 	uint32_t *m;
-
 	uint8_t b1, b2, b3, b4;
 	int i;
 	
@@ -63,12 +62,13 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 					m[0] = b1 << 24 | b2 << 16 | b3 << 8 | b4;
 
 					/* Calculate forward until after round 48 */
-					forward_result = md5_truncated((char*) m, 48);
+					forward_result = md5_truncated(m, 48);
 
 					if (*(forward_result.a) == *ap &&
 						*(forward_result.b) == *bp &&
 						*(forward_result.c) == *cp &&
 						*(forward_result.d) == *dp) {
+							free(m);
 							return TRUE;
 					}
 
@@ -82,6 +82,7 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		}
 	}
 
+	free(m);
 	return FALSE;
 }
 
@@ -91,7 +92,7 @@ int main(int argc, char ** argv) {
 	char * input;
 	int ret = FALSE;
 
-	input = "    ";
+	input = "7c!B";
 	test_target = md5(input);
 	
 	// TODO: Make the output of the initial MD5 call act as 

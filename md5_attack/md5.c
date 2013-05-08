@@ -202,7 +202,5 @@ md5_state md5_truncated(uint32_t * m, int stop_after_round)
 	retval.c = c;
 	retval.d = d;
 
-	free(m);
-
 	return retval;
 }
