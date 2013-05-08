@@ -6,7 +6,7 @@
 #define FALSE 0
 
 /* The main attack. Takes a hash value a,b,c,d and tries to determine a preimage. */
-int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	uint32_t *ap, *bp, *cp, *dp;
 	uint32_t *m;
 
@@ -22,11 +22,11 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 	m = (uint32_t *) calloc(16, sizeof(uint32_t));
 
 	/* Fix some m1, m2 */
-	m[1] = 0x00000000;
+	m[1] = 0x00000080; /* padding for a 4-char message */
 	m[2] = 0x00000000;
 
 	/* Define the length of the message. TODO: fix */
-	m[14] = 4*8;
+	m[14] = length*8;
 
 	/* Subtract the h0..3 */
 	*ap -= h0;
@@ -39,6 +39,7 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 	for (i = 63; i > 48; i--) {
 		md5_round_backwards(&ap, &bp, &cp, &dp, m, i);
 		printf("%d: %.8x %.8x %.8x %.8x\n", i, *ap, *bp, *cp, *dp); 
+		printf("(using message %.8x)\n\n", m[m_idx[i]]);
 	}
 
 	printf("Value at pivot: \n");
@@ -66,7 +67,6 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 					/* Calculate forward until after round 48 */
 					forward_result = md5_truncated((char*) m, 48);
 
-					/* printf("%.8x %.8x %.8x\n", m[0], m[1], m[2]); */
 
 					if (b1 == 0x20 && b2 == 0x20 && b3 == 0x20 && b4 == 0x20) 
 						printf("%.8x %.8x %.8x %.8x\n", *(forward_result.a), *(forward_result.b), *(forward_result.c), *(forward_result.d)); 
@@ -107,7 +107,7 @@ int main(int argc, char ** argv) {
 	
 	// TODO: Make the output of the initial MD5 call act as 
 	//       the input to the attack.
-	ret = attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d);
+	ret = attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
 
 	printf("%d", ret);
 	scanf("%d", &input);
