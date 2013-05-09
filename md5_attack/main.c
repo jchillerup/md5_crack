@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "md5.h"
 #include <time.h>
+#include "md5.h"
+#include "main.h"
+
+#ifdef asdf
 #include "cacheattack.c"
 #include "naivesearch.c"
 #include "mitmattack.c"
+#endif
+
+
 
 int main(int argc, char ** argv) {
 	md5_state test_target;
@@ -26,7 +32,7 @@ int main(int argc, char ** argv) {
 	if (ret == TRUE) {
 		printf("\n  Preimage found ");
 	} else {
-		printf("\n  Preimage not ");
+		printf("\n  Preimage not found ");
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
@@ -40,7 +46,7 @@ int main(int argc, char ** argv) {
 	if (ret == TRUE) {
 		printf("\n  Preimage found ");
 	} else {
-		printf("\n  Preimage not ");
+		printf("\n  Preimage not found ");
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
@@ -54,7 +60,7 @@ int main(int argc, char ** argv) {
 	if (ret == TRUE) {
 		printf("\n  Preimage found ");
 	} else {
-		printf("\n  Preimage not ");
+		printf("\n  Preimage not found ");
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 

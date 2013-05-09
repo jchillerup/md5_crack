@@ -185,14 +185,6 @@ md5_state md5_truncated(uint32_t * m, int stop_after_round)
 	*b = h1;
 	*c = h2;
 	*d = h3;
-	
-#ifdef DEBUGS
-	printf("Truncated MD5 message: ");
-	for (i = 0; i<16; i++) {
-		printf("%.8x ", m[i]);
-	}
-	printf("\n");
-#endif
 
 	// Calculate the hash value
 	for (i = 0; i <= stop_after_round; i++) {

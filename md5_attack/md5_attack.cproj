@@ -11,6 +11,7 @@
     <Compiler>
       <Compiler ctype="GppCompiler" />
     </Compiler>
+    <newfilesearch>OnLoadAutoInsert</newfilesearch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -19,6 +20,11 @@
     <SourceDirectory>.</SourceDirectory>
     <OutputName>md5_attack</OutputName>
     <CompileTarget>Bin</CompileTarget>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
@@ -37,5 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="md5.h" />
+    <None Include="main.h" />
   </ItemGroup>
 </Project>
