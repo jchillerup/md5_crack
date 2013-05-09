@@ -33,6 +33,7 @@
     <Compile Include="md5.c" />
     <Compile Include="naivesearch.c" />
     <Compile Include="cacheattack.c" />
+    <Compile Include="mitmattack.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="md5.h" />

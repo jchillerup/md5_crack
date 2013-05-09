@@ -4,6 +4,7 @@
 #include <time.h>
 #include "cacheattack.c"
 #include "naivesearch.c"
+#include "mitmattack.c"
 
 int main(int argc, char ** argv) {
 	md5_state test_target;
