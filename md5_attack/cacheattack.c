@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "md5.h"
 
-/* The main attack. Takes a hash value a,b,c,d and tries to determine a preimage. */
 int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	uint32_t *ap, *bp, *cp, *dp;
 	uint32_t *m;

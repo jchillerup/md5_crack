@@ -16,6 +16,7 @@ int main(int argc, char ** argv) {
 	input = "AA  ";
 	test_target = md5(input);
 	
+	/*
 
 	printf("\nNaively searching...\n");
 	cl = clock();
@@ -43,7 +44,8 @@ int main(int argc, char ** argv) {
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
-
+	*/ 
+	
 	printf("Performing meet-in-the-middle attack...\n");
 	cl = clock();
 	ret = mitm_attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
