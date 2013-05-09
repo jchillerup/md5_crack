@@ -31,6 +31,8 @@
   <ItemGroup>
     <Compile Include="main.c" />
     <Compile Include="md5.c" />
+    <Compile Include="naivesearch.c" />
+    <Compile Include="cacheattack.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="md5.h" />
