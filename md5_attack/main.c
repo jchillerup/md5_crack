@@ -5,8 +5,6 @@
 #include "cacheattack.c"
 #include "naivesearch.c"
 
-
-
 int main(int argc, char ** argv) {
 	md5_state test_target;
 	clock_t cl;
@@ -17,20 +15,6 @@ int main(int argc, char ** argv) {
 	input = "AA  ";
 	test_target = md5(input);
 	
-	// TODO: Make the output of the initial MD5 call act as 
-	//       the input to the attack.
-	printf("Performing cache attack...\n");
-	cl = clock();
-	ret = cache_attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
-	cl = clock() - cl;
-
-	if (ret == TRUE) {
-		printf("\n  Preimage found ");
-	} else {
-		printf("\n  Preimage not ");
-	}
-	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
-
 
 	printf("\nNaively searching...\n");
 	cl = clock();
@@ -44,6 +28,32 @@ int main(int argc, char ** argv) {
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
+
+
+	printf("Performing cache attack...\n");
+	cl = clock();
+	ret = cache_attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
+	cl = clock() - cl;
+
+	if (ret == TRUE) {
+		printf("\n  Preimage found ");
+	} else {
+		printf("\n  Preimage not ");
+	}
+	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
+
+
+	printf("Performing meet-in-the-middle attack...\n");
+	cl = clock();
+	ret = mitm_attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
+	cl = clock() - cl;
+
+	if (ret == TRUE) {
+		printf("\n  Preimage found ");
+	} else {
+		printf("\n  Preimage not ");
+	}
+	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
 
 #ifdef WINDOWS
