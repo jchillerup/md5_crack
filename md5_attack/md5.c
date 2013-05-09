@@ -148,7 +148,7 @@ md5_state md5(char * input)
 		md5_round(&a, &b, &c, &d, m, i);
 	}
 	
-#ifdef DEBUG
+#ifdef DEBUGS
 	for (i = 0; i<16; i++) {
 		printf("%.2x ", m[i]);
 	}
@@ -184,7 +184,7 @@ md5_state md5_truncated(uint32_t * m, int stop_after_round)
 	*c = h2;
 	*d = h3;
 	
-#ifdef DEBUG
+#ifdef DEBUGS
 	printf("Truncated MD5 message: ");
 	for (i = 0; i<16; i++) {
 		printf("%.8x ", m[i]);

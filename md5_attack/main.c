@@ -89,12 +89,19 @@ int  attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	return FALSE;
 }
 
-int  naive_search(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+int  naive_search(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	uint8_t b1, b2, b3, b4;
-	char* m;
+	uint32_t* m;
 
-	m = (char*) calloc(5, sizeof(char));
+	m = (uint32_t*) calloc(16, sizeof(uint32_t));
 
+	/* Fix some m1, m2 */
+	m[1] = 0x00000080; /* TODO: padding for a 4-char message */
+	m[2] = 0x00000000;
+
+	/* Define the length of the message. */
+	m[14] = length*8;
+	
 	for (b1 = 0x20; b1 < 0x7f; b1++) {
 		float percentage_done = 100* ((float) b1-0x20) / 0x7f;
 		printf("  Percentage through the whole space: %.2f\r", percentage_done );
@@ -107,15 +114,14 @@ int  naive_search(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 					md5_state forward_result;
 
 					/* Establish current m0 */
-					*((uint32_t*) m) = b4 << 24 | b3 << 16 | b2 << 8 | b1;
+					m[0] = b4 << 24 | b3 << 16 | b2 << 8 | b1;
 					
-					/* Calculate forward until after round 48 */
-					forward_result = md5(m);
+					forward_result = md5_truncated(m, 63);
 
-					if (*(forward_result.a) == a &&
-						*(forward_result.b) == b &&
-						*(forward_result.c) == c &&
-						*(forward_result.d) == d) {
+					if (*(forward_result.a) + h0 == a &&
+						*(forward_result.b) + h1 == b &&
+						*(forward_result.c) + h2 == c &&
+						*(forward_result.d) + h3 == d) {
 							free(m);
 							return TRUE;
 					}
@@ -161,7 +167,7 @@ int main(int argc, char ** argv) {
 
 	printf("\nNaively searching...\n");
 	cl = clock();
-	ret = naive_search(*test_target.a, *test_target.b,  *test_target.c, *test_target.d);
+	ret = naive_search(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
 	cl = clock() - cl;
 	
 	if (ret == TRUE) {
