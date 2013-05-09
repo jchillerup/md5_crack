@@ -165,6 +165,8 @@ md5_state md5(char * input)
 	ret.b = b;
 	ret.c = c;
 	ret.d = d;
+	
+	free(m);
 
 	return ret;
 }
