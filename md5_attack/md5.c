@@ -147,14 +147,6 @@ md5_state md5(char * input)
 	for (i = 0; i<64; i++) {
 		md5_round(&a, &b, &c, &d, m, i);
 	}
-	
-#ifdef DEBUGS
-	for (i = 0; i<16; i++) {
-		printf("%.2x ", m[i]);
-	}
-	printf("\n");
-#endif
-
 
 	*a += h0;
 	*b += h1;
