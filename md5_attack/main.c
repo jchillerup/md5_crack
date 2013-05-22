@@ -4,13 +4,6 @@
 #include "md5.h"
 #include "main.h"
 
-#ifdef asdf
-#include "cacheattack.c"
-#include "naivesearch.c"
-#include "mitmattack.c"
-#endif
-
-
 
 int main(int argc, char ** argv) {
 	md5_state test_target;

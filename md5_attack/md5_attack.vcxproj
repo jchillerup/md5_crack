@@ -19,6 +19,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -63,8 +64,11 @@
     <ClInclude Include="md5.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cacheattack.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="md5.c" />
+    <ClCompile Include="mitmattack.c" />
+    <ClCompile Include="naivesearch.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.txt" />

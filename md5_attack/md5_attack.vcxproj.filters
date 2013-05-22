@@ -21,6 +21,15 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cacheattack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="naivesearch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mitmattack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="md5.h">
