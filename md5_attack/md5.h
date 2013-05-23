@@ -3,8 +3,8 @@
 #define TRUE 1
 #define FALSE 0
 
-#define BYTES_BEGIN 0x20
-#define BYTES_END 0x7f
+#define BYTES_BEGIN 0x41
+#define BYTES_END 0x5A
 
 extern const uint32_t h0;
 extern const uint32_t h1;
