@@ -19,10 +19,10 @@
 #endif
 
 
-#define F(b, c, d) (((**b) & (**c)) | ((~(**b)) & (**d)))
-#define G(b, c, d) (((**b) & (**d)) | ((**c) & (~(**d))))
-#define H(b, c, d) ((**b) ^ (**c) ^ (**d))
-#define I(b, c, d) ((**c) ^ ((**b) | (~(**d))))
+#define F(b, c, d) (((b) & (c)) | ((~(b)) & (d)))
+#define G(b, c, d) (((b) & (d)) | ((c) & (~(d))))
+#define H(b, c, d) ((b) ^ (c) ^ (d))
+#define I(b, c, d) ((c) ^ ((b) | (~(d))))
 
 #define ROTATE_LEFT(w, s)  (w = (w << s) | (w >> (32 - s)))
 #define ROTATE_RIGHT(w, s) (w = (w >> s) | (w << (32 - s)))
@@ -57,18 +57,17 @@ const uint32_t h3 = 0x10325476;
    64-byte boundary.  (RFC 1321, 3.1: Step 1)  */
 static const uint32_t fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
 
-void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t* m, int r) {
-	
+void md5_round(md5_state *state_ptr, uint32_t* m, int r) {
 	uint32_t f_val;
 	uint32_t new_b;
-	uint32_t* old_a_p;
+	uint32_t old_a;
 	
-	if      (r < 16) f_val = F(b, c, d);
-	else if (r < 32) f_val = G(b, c, d);
-	else if (r < 48) f_val = H(b, c, d);
-	else             f_val = I(b, c, d);
+	if      (r < 16) f_val = F(state_ptr->b, state_ptr->c, state_ptr->d);
+	else if (r < 32) f_val = G(state_ptr->b, state_ptr->c, state_ptr->d);
+	else if (r < 48) f_val = H(state_ptr->b, state_ptr->c, state_ptr->d);
+	else             f_val = I(state_ptr->b, state_ptr->c, state_ptr->d);
 	
-	new_b  = **a; 
+	new_b  = state_ptr->a; 
 	
 	new_b += f_val;
 	new_b += k[r];
@@ -76,57 +75,48 @@ void md5_round(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t*
 	
 	ROTATE_LEFT(new_b, s[r]);
 	
-	old_a_p = *a;
-	*a = *d;
-	*d = *c;
-	*c = *b;
-	*b = old_a_p;
+	old_a = state_ptr->a;
+	state_ptr->a = state_ptr->d;
+	state_ptr->d = state_ptr->c;
+	state_ptr->c = state_ptr->b;
+	state_ptr->b = old_a;
 	
-	**b = new_b + (**c);
+	state_ptr->b = new_b + (state_ptr->c);
 }
 
-void md5_round_backwards(uint32_t** a, uint32_t** b, uint32_t** c, uint32_t** d, uint32_t* m, int r) {
+void md5_round_backwards(md5_state *state_ptr, uint32_t* m, int r) {
 	uint32_t f_val;
 	uint32_t new_a;
-	uint32_t* old_b_p;
+	uint32_t old_b;
 	
-	old_b_p = *b;
-	*b = *c;
-	*c = *d;
-	*d = *a;
-	*a = old_b_p;
+	old_b = state_ptr->b;
+	state_ptr->b = state_ptr->c;
+	state_ptr->c = state_ptr->d;
+	state_ptr->d = state_ptr->a;
+	state_ptr->a = old_b;
 	
-	if      (r < 16) f_val = F(b, c, d);
-	else if (r < 32) f_val = G(b, c, d);
-	else if (r < 48) f_val = H(b, c, d);
-	else             f_val = I(b, c, d);
+	if      (r < 16) f_val = F(state_ptr->b, state_ptr->c, state_ptr->d);
+	else if (r < 32) f_val = G(state_ptr->b, state_ptr->c, state_ptr->d);
+	else if (r < 48) f_val = H(state_ptr->b, state_ptr->c, state_ptr->d);
+	else             f_val = I(state_ptr->b, state_ptr->c, state_ptr->d);
 	
-	new_a = **a - **b;
+	new_a = state_ptr->a - state_ptr->b;
 	ROTATE_RIGHT(new_a, s[r]);
 	
 	new_a -= f_val;
 	new_a -= k[r];
 	new_a -= m[m_idx[r]];
 	
-	**a = new_a;
+	state_ptr->a = new_a;
 }
 
 md5_state md5(char * input)
 {
-	uint32_t *a = (uint32_t*) malloc(sizeof(uint32_t));
-	uint32_t *b = (uint32_t*) malloc(sizeof(uint32_t));
-	uint32_t *c = (uint32_t*) malloc(sizeof(uint32_t));
-	uint32_t *d = (uint32_t*) malloc(sizeof(uint32_t));
+	md5_state ret;
 	
-	uint32_t * m = (uint32_t *) calloc(16, sizeof(uint32_t));
+	uint32_t *m = (uint32_t *) calloc(16, sizeof(uint32_t));
 	int input_length = strlen(input);
 	int i;
-	md5_state ret;
-
-	*a = h0;
-	*b = h1;
-	*c = h2;
-	*d = h3;
 
 	// We don't want inputs larger than what fits in the first three message words
 	// (we can use strlen because there's no chance of 0x00s just yet.
@@ -144,10 +134,8 @@ md5_state md5(char * input)
 	m[14] = input_length * 8;
 	
 	// Calculate the hash value
-	for (i = 0; i<64; i++) {
-		md5_round(&a, &b, &c, &d, m, i);
-	}
-	
+	md5_truncated(&ret, m, 63);
+
 #ifdef DEBUGS
 	for (i = 0; i<16; i++) {
 		printf("%.2x ", m[i]);
@@ -155,46 +143,27 @@ md5_state md5(char * input)
 	printf("\n");
 #endif
 
+	ret.a += h0;
+	ret.b += h1;
+	ret.c += h2;
+	ret.d += h3;
 
-	*a += h0;
-	*b += h1;
-	*c += h2;
-	*d += h3;
-	
-	ret.a = a;
-	ret.b = b;
-	ret.c = c;
-	ret.d = d;
-	
 	free(m);
 
 	return ret;
 }
 
-md5_state md5_truncated(uint32_t * m, int stop_after_round)
+void md5_truncated(md5_state* state_ptr, uint32_t * m, int stop_after_round)
 {
-	uint32_t *a = (uint32_t*) malloc(sizeof(uint32_t));
-	uint32_t *b = (uint32_t*) malloc(sizeof(uint32_t));
-	uint32_t *c = (uint32_t*) malloc(sizeof(uint32_t));
-	uint32_t *d = (uint32_t*) malloc(sizeof(uint32_t));
-	
 	int i;
-	md5_state retval;
 
-	*a = h0;
-	*b = h1;
-	*c = h2;
-	*d = h3;
+	state_ptr->a = h0;
+	state_ptr->b = h1;
+	state_ptr->c = h2;
+	state_ptr->d = h3;
 
 	// Calculate the hash value
 	for (i = 0; i <= stop_after_round; i++) {
-		md5_round(&a, &b, &c, &d, m, i);
+		md5_round(state_ptr, m, i);
 	}
-
-	retval.a = a;
-	retval.b = b;
-	retval.c = c;
-	retval.d = d;
-
-	return retval;
 }
