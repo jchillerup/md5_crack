@@ -19,21 +19,17 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	/* Allocs, be sure to free these */
 	m = (uint32_t*) calloc(16, sizeof(uint32_t));
 
-	pa = (uint32_t*) malloc(sizeof(uint32_t));
-	pb = (uint32_t*) malloc(sizeof(uint32_t));
-	pc = (uint32_t*) malloc(sizeof(uint32_t));
-	pd = (uint32_t*) malloc(sizeof(uint32_t));
-
 	forward_chain  = (md5_state*) calloc(fsize, sizeof(md5_state));
 	backward_chain = (md5_state*) calloc(bsize, sizeof(md5_state));
 
 	fptr = forward_chain;
 	bptr = backward_chain;
 
-	m[1] = 0x41414141; 
-	
+	m[1]  = 0x41414141; 
+	m[14] = length*8;
+
+	// FORWARD CHAIN
 	printf("  + Calculating forward chain.\n");
-	/* Make forward chain */
 	for (ba = BYTES_BEGIN; ba < BYTES_END; ba++) {
 	for (bb = BYTES_BEGIN; bb < BYTES_END; bb++) {
 	for (bc = BYTES_BEGIN; bc < BYTES_END; bc++) {
@@ -59,46 +55,64 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	}
 	}
 	
-	
+
+	// BACKWARD CHAIN
 	printf("  + Calculating backward chain.\n");
-	
-	for  (ba = BYTES_BEGIN; a < BYTES_END; a++) {
-		md5_state res;
+	for  (ba = BYTES_BEGIN; ba < BYTES_END; ba++) {
+		uint32_t pa, pb, pc, pd;
+		uint32_t *ppa, *ppb, *ppc, *ppd;
+
 		m[2] = 0x00008000 | ba;
 		
-		*pa = a - h0;
-		*pb = b - h1;
-		*pc = c - h2;
-		*pd = d - h3;
+		pa = a - h0;
+		pb = b - h1;
+		pc = c - h2;
+		pd = d - h3;
+
+		ppa = &pa;
+		ppb = &pb;
+		ppc = &pc;
+		ppd = &pd;
 		
 		for (i = 63; i > 48; i--) {
-			md5_round_backwards(&pa, &pb, &pc, &pd, m, i);
+			md5_round_backwards(&ppa, &ppb, &ppc, &ppd, m, i);
 		}
 		
-		bptr->a = pa;
-		bptr->b = pb;
-		bptr->c = pc;
-		bptr->d = pd;
+		bptr->a = ppa;
+		bptr->b = ppb;
+		bptr->c = ppc;
+		bptr->d = ppd;
+
+		bptr++;
 	}
-	
-	printf("Done.\n");
 
 
-
+	// ONLINE PHASE
 	printf("  + Online phase.\n");
-	for(fptr = forward_chain; fptr < forward_chain + fsize; fptr++) {
-	for(bptr = backward_chain; bptr < backward_chain + bsize; bptr++) {
-	
-		
-	
-	}
-	}
+	for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
+		printf(".");
 
+		pa = bptr->a;
+		pb = bptr->b;
+		pc = bptr->c;
+		pd = bptr->d;
 
-	free(pa);
-	free(pb);
-	free(pc);
-	free(pd);
+		for (i = 48; i > 1; i--) {
+			md5_round_backwards(&pa, &pb, &pc, &pd, m, i);
+		}
+	
+		// So we have the value for this particular value for m2. Check
+		// if it matches a value from m0:
+		for (fptr = forward_chain; fptr < (forward_chain + fsize); fptr++) {
+			if (pa == fptr->a && pb == fptr->b && pc == fptr->c && pd == fptr->d) {
+				// If it does, we found the preimage.
+
+				printf("Found!\n");
+				return TRUE;
+			}
+		}
+
+	}
 	
 
 	return FALSE;

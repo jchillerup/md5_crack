@@ -12,7 +12,7 @@ int main(int argc, char ** argv) {
 	char * input;
 	int ret = FALSE;
 
-	input = "AA  ";
+	input = "ZZZZAAAAT";
 	test_target = md5(input);
 	
 	/*
@@ -58,7 +58,7 @@ int main(int argc, char ** argv) {
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
 
-#ifdef WINDOWS
+#ifdef _WIN32
 	scanf("%d", &input);
 #endif
 
