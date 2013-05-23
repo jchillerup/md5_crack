@@ -29,21 +29,15 @@ int  naive_search(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 					/* Establish current m0 */
 					m[0] = b4 << 24 | b3 << 16 | b2 << 8 | b1;
 					
-					forward_result = md5_truncated(m, 63);
+					md5_truncated(&forward_result, m, 63);
 
-					if (*(forward_result.a) + h0 == a &&
-						*(forward_result.b) + h1 == b &&
-						*(forward_result.c) + h2 == c &&
-						*(forward_result.d) + h3 == d) {
+					if (forward_result.a + h0 == a &&
+						forward_result.b + h1 == b &&
+						forward_result.c + h2 == c &&
+						forward_result.d + h3 == d) {
 							free(m);
 							return TRUE;
 					}
-
-					/* Remember to free */
-					free(forward_result.a);
-					free(forward_result.b);
-					free(forward_result.c);
-					free(forward_result.d);
 				}
 			}
 		}

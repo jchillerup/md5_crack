@@ -12,14 +12,13 @@ int main(int argc, char ** argv) {
 	char * input;
 	int ret = FALSE;
 
-	input = "ZZZZAAAAT";
+	input = "AA  ";
 	test_target = md5(input);
 	
-	/*
-
+	
 	printf("\nNaively searching...\n");
 	cl = clock();
-	ret = naive_search(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
+	ret = naive_search(test_target.a, test_target.b,  test_target.c, test_target.d, 4);
 	cl = clock() - cl;
 	
 	if (ret == TRUE) {
@@ -33,7 +32,7 @@ int main(int argc, char ** argv) {
 
 	printf("Performing cache attack...\n");
 	cl = clock();
-	ret = cache_attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
+	ret = cache_attack(test_target.a, test_target.b,  test_target.c, test_target.d, 4);
 	cl = clock() - cl;
 
 	if (ret == TRUE) {
@@ -43,11 +42,11 @@ int main(int argc, char ** argv) {
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
-	*/ 
+	
 	
 	printf("Performing meet-in-the-middle attack...\n");
 	cl = clock();
-	ret = mitm_attack(*test_target.a, *test_target.b,  *test_target.c, *test_target.d, 4);
+	ret = mitm_attack(test_target.a, test_target.b,  test_target.c, test_target.d, 9);
 	cl = clock() - cl;
 
 	if (ret == TRUE) {

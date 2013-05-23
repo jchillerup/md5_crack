@@ -37,7 +37,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		md5_state res;
 		m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
 		
-		res = md5_truncated(m, 1);
+		md5_truncated(&res, m, 1);
 		
 		fptr->a = res.a;
 		fptr->b = res.b;
@@ -45,11 +45,6 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		fptr->d = res.d;
 		
 		fptr++;
-		
-		free(res.a);
-		free(res.b);
-		free(res.c);
-		free(res.d);
 	}
 	}
 	}
@@ -59,29 +54,23 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	// BACKWARD CHAIN
 	printf("  + Calculating backward chain.\n");
 	for  (ba = BYTES_BEGIN; ba < BYTES_END; ba++) {
-		uint32_t pa, pb, pc, pd;
-		uint32_t *ppa, *ppb, *ppc, *ppd;
+		md5_state tmp;
 
 		m[2] = 0x00008000 | ba;
 		
-		pa = a - h0;
-		pb = b - h1;
-		pc = c - h2;
-		pd = d - h3;
+		tmp.a = a - h0;
+		tmp.b = b - h1;
+		tmp.c = c - h2;
+		tmp.d = d - h3;
 
-		ppa = &pa;
-		ppb = &pb;
-		ppc = &pc;
-		ppd = &pd;
-		
 		for (i = 63; i > 48; i--) {
-			md5_round_backwards(&ppa, &ppb, &ppc, &ppd, m, i);
+			md5_round_backwards(&tmp, m, i);
 		}
 		
-		bptr->a = ppa;
-		bptr->b = ppb;
-		bptr->c = ppc;
-		bptr->d = ppd;
+		bptr->a = tmp.a;
+		bptr->b = tmp.b;
+		bptr->c = tmp.c;
+		bptr->d = tmp.d;
 
 		bptr++;
 	}
@@ -90,21 +79,21 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	// ONLINE PHASE
 	printf("  + Online phase.\n");
 	for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
-		printf(".");
-
-		pa = bptr->a;
-		pb = bptr->b;
-		pc = bptr->c;
-		pd = bptr->d;
+		md5_state tmp;
+		
+		tmp.a = bptr->a;
+		tmp.b = bptr->b;
+		tmp.c = bptr->c;
+		tmp.d = bptr->d;
 
 		for (i = 48; i > 1; i--) {
-			md5_round_backwards(&pa, &pb, &pc, &pd, m, i);
+			md5_round_backwards(&tmp, m, i);
 		}
 	
 		// So we have the value for this particular value for m2. Check
 		// if it matches a value from m0:
 		for (fptr = forward_chain; fptr < (forward_chain + fsize); fptr++) {
-			if (pa == fptr->a && pb == fptr->b && pc == fptr->c && pd == fptr->d) {
+			if (tmp.a == fptr->a && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == fptr->d) {
 				// If it does, we found the preimage.
 
 				printf("Found!\n");
