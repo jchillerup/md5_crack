@@ -7,9 +7,9 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{093E2A8E-3CBE-4A73-B437-4D54E29B5672}</ProjectGuid>
     <Target>Bin</Target>
-    <Language>CPP</Language>
+    <Language>C</Language>
     <Compiler>
-      <Compiler ctype="GppCompiler" />
+      <Compiler ctype="GccCompiler" />
     </Compiler>
     <newfilesearch>OnLoadAutoInsert</newfilesearch>
   </PropertyGroup>
@@ -44,5 +44,9 @@
   <ItemGroup>
     <None Include="md5.h" />
     <None Include="main.h" />
+    <None Include="TODO.txt" />
+    <None Include="md5_attack.vcxproj" />
+    <None Include="md5_attack.vcxproj.filters" />
+    <None Include="md5_attack.vcxproj.user" />
   </ItemGroup>
 </Project>
