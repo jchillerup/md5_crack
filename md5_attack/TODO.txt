@@ -7,3 +7,5 @@ Optimize the naive implementation as much as possible so as to weed out any doub
 Fix md5.c to avoid all the mallocs and use real types instead.
 
 Make md5.c more DRY
+
+We don't need to store the full state for the first chain, since much of it is given by MD5 spec, i.e. h0..h4

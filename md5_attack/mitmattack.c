@@ -29,20 +29,14 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 	// FORWARD CHAIN
 	printf("  + Calculating forward chain.\n");
-	for (ba = BYTES_BEGIN; ba < BYTES_END; ba++) {
-	for (bb = BYTES_BEGIN; bb < BYTES_END; bb++) {
-	for (bc = BYTES_BEGIN; bc < BYTES_END; bc++) {
-	for (bd = BYTES_BEGIN; bd < BYTES_END; bd++) {
-		md5_state res;
+	for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
+	for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
+	for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
+	for (bd = BYTES_BEGIN; bd <= BYTES_END; bd++) {
 		m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
 		
-		md5_truncated(&res, m, 1);
-		
-		fptr->a = res.a;
-		fptr->b = res.b;
-		fptr->c = res.c;
-		fptr->d = res.d;
-		
+		md5_truncated(fptr, m, 1);
+
 		fptr++;
 	}
 	}
@@ -52,25 +46,18 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 	// BACKWARD CHAIN
 	printf("  + Calculating backward chain.\n");
-	for  (ba = BYTES_BEGIN; ba < BYTES_END; ba++) {
-		md5_state tmp;
-
+	for  (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
 		m[2] = 0x00008000 | ba;
 		
-		tmp.a = a - h0;
-		tmp.b = b - h1;
-		tmp.c = c - h2;
-		tmp.d = d - h3;
+		bptr->a = a - h0;
+		bptr->b = b - h1;
+		bptr->c = c - h2;
+		bptr->d = d - h3;
 
 		for (i = 63; i > 48; i--) {
-			md5_round_backwards(&tmp, m, i);
+			md5_round_backwards(bptr, m, i);
 		}
 		
-		bptr->a = tmp.a;
-		bptr->b = tmp.b;
-		bptr->c = tmp.c;
-		bptr->d = tmp.d;
-
 		bptr++;
 	}
 
@@ -89,7 +76,8 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		for (i = 48; i > 1; i--) {
 			md5_round_backwards(&tmp, m, i);
 		}
-	
+
+
 		// So we have the value for this particular value for m2. Check
 		// if it matches a value from m0:
 		for (fptr = forward_chain; fptr < (forward_chain + fsize); fptr++) {
