@@ -4,7 +4,7 @@
 #define FALSE 0
 
 #define BYTES_BEGIN 0x41
-#define BYTES_END 0x5A
+#define BYTES_END 0x42
 
 extern const uint32_t h0;
 extern const uint32_t h1;

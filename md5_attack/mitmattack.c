@@ -5,7 +5,6 @@
 
 int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	uint32_t *m;
-	uint32_t *pa, *pb, *pc, *pd;
 	uint8_t ba, bb, bc, bd;
 
 	int fsize, bsize, i;
@@ -80,6 +79,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	printf("  + Online phase.\n");
 	for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
 		md5_state tmp;
+		printf(".");
 		
 		tmp.a = bptr->a;
 		tmp.b = bptr->b;
@@ -95,7 +95,6 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		for (fptr = forward_chain; fptr < (forward_chain + fsize); fptr++) {
 			if (tmp.a == fptr->a && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == fptr->d) {
 				// If it does, we found the preimage.
-
 				printf("Found!\n");
 				return TRUE;
 			}

@@ -12,10 +12,10 @@ int main(int argc, char ** argv) {
 	char * input;
 	int ret = FALSE;
 
-	input = "AA  ";
+	input = "AAAAAAAAA";
 	test_target = md5(input);
 	
-	
+	/*
 	printf("\nNaively searching...\n");
 	cl = clock();
 	ret = naive_search(test_target.a, test_target.b,  test_target.c, test_target.d, 4);
@@ -42,7 +42,7 @@ int main(int argc, char ** argv) {
 	}
 	printf("after %f seconds.\n", ((float)cl)/CLOCKS_PER_SEC);
 
-	
+	*/
 	
 	printf("Performing meet-in-the-middle attack...\n");
 	cl = clock();
