@@ -110,7 +110,7 @@ void md5_round_backwards(md5_state *state_ptr, uint32_t* m, int r) {
 	state_ptr->a = new_a;
 
 	
-	printf("%.08x %.08x %.08x %.08x\n", state_ptr->a, state_ptr->b, state_ptr->c, state_ptr->d);
+	//printf("%.08x %.08x %.08x %.08x\n", state_ptr->a, state_ptr->b, state_ptr->c, state_ptr->d);
 }
 
 md5_state md5(char * input)

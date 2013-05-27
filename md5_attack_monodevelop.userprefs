@@ -1,25 +1,27 @@
 ﻿<Properties GitUserInfo="UsingGIT">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/main.c">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/mitmattack.c">
     <Files>
-      <File FileName="md5_attack/main.c" Line="20" Column="9" />
-      <File FileName="md5_attack/md5.c" Line="1" Column="19" />
-      <File FileName="md5_attack/mitmattack.c" Line="13" Column="49" />
-      <File FileName="iterator/iterator.c" Line="14" Column="23" />
+      <File FileName="md5_attack/main.c" Line="21" Column="52" />
+      <File FileName="md5_attack/md5.c" Line="142" Column="8" />
+      <File FileName="md5_attack/mitmattack.c" Line="69" Column="14" />
+      <File FileName="md5_attack/naivesearch.c" Line="37" Column="22" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="iterator" expanded="True" />
           <Node name="md5_attack" expanded="True">
-            <Node name="main.c" selected="True" />
+            <Node name="mitmattack.c" selected="True" />
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/home/jens/Master/projects/md5_attack/md5_attack/naivesearch.c" line="32" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
