@@ -119,7 +119,6 @@ md5_state md5(char * input)
 	
 	uint32_t *m = (uint32_t *) calloc(16, sizeof(uint32_t));
 	int input_length = strlen(input);
-	int i;
 
 	// We don't want inputs larger than what fits in the first three message words
 	// (we can use strlen because there's no chance of 0x00s just yet.

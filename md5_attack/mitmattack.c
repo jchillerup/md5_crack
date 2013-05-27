@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 #include "md5.h"
 
 int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
@@ -21,14 +22,13 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	forward_chain  = (md5_state*) calloc(fsize, sizeof(md5_state));
 	backward_chain = (md5_state*) calloc(bsize, sizeof(md5_state));
 
-	fptr = forward_chain;
-	bptr = backward_chain;
 
 	m[1]  = 0x41414141;
 	m[14] = length*8;
 
 	// FORWARD CHAIN
 	printf("  + Calculating forward chain.\n");
+	fptr = forward_chain;
 	for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
 	for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
 	for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
@@ -36,7 +36,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
 		
 		md5_truncated(fptr, m, 1);
-
+		
 		fptr++;
 	}
 	}
@@ -46,6 +46,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 	// BACKWARD CHAIN
 	printf("  + Calculating backward chain.\n");
+	bptr = backward_chain;
 	for  (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
 		m[2] = 0x00008000 | ba;
 		
@@ -57,32 +58,46 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		for (i = 63; i > 48; i--) {
 			md5_round_backwards(bptr, m, i);
 		}
-		
-		printf("%.08x %.08x %.08x %.08x\n", bptr->a, bptr->b, bptr->c, bptr->d);
-		
+
 		bptr++;
 	}
 
 
 	// ONLINE PHASE
 	printf("  + Online phase.\n");
+	bptr = backward_chain;
 	for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
 		md5_state tmp;
-		printf(".\n");
-		
-		tmp.a = bptr->a;
-		tmp.b = bptr->b;
-		tmp.c = bptr->c;
-		tmp.d = bptr->d;
-
-		for (i = 48; i > 1; i--) {
-			md5_round_backwards(&tmp, m, i);
-		}
-
+		m[2] = 0x00008000 | (BYTES_BEGIN + (bptr - backward_chain));
 
 		// So we have the value for this particular value for m2. Check
 		// if it matches a value from m0:
 		for (fptr = forward_chain; fptr < (forward_chain + fsize); fptr++) {
+			int fpl;
+			uint32_t ba, bb, bc, bd;
+
+			tmp.a = bptr->a;
+			tmp.b = bptr->b;
+			tmp.c = bptr->c;
+			tmp.d = bptr->d;
+
+			fpl = fptr - forward_chain;	
+			
+			// Update m[0] and m[2] to corresponding values in base-BYTES_LENGTH
+			bd = fpl % BYTES_BASE; fpl /= BYTES_BASE;
+			bc = fpl % BYTES_BASE; fpl /= BYTES_BASE;
+			bb = fpl % BYTES_BASE; fpl /= BYTES_BASE;
+			ba = fpl % BYTES_BASE; fpl /= BYTES_BASE;
+			
+			assert(fpl == 0);
+
+			m[0] = (BYTES_BEGIN + bd) << 24 | (BYTES_BEGIN + bc) << 16 | (BYTES_BEGIN + bb) << 8 | (BYTES_BEGIN + ba);
+			
+			for (i = 48; i > 1; i--) {
+				md5_round_backwards(&tmp, m, i);
+			}
+
+
 			if (tmp.a == fptr->a && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == fptr->d) {
 				// If it does, we found the preimage.
 				printf("Found!\n");
