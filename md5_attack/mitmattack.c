@@ -3,8 +3,10 @@
 #include <math.h>
 #include <assert.h>
 #include "md5.h"
+#include <time.h>
 
 int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
+	clock_t cl;
 	uint32_t *m;
 	uint8_t ba, bb, bc, bd;
 
@@ -64,6 +66,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 
 	// ONLINE PHASE
+	cl = clock();
 	printf("  + Online phase.\n");
 	bptr = backward_chain;
 	for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
@@ -101,12 +104,17 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 			if (tmp.a == fptr->a && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == fptr->d) {
 				// If it does, we found the preimage.
 				printf("Found!\n");
+				cl = clock() - cl;
+
+				printf("Online time: %f sec.\n", ((float)cl)/CLOCKS_PER_SEC);
+
 				return TRUE;
 			}
 		}
 
 	}
-	
+	cl = clock() - cl;
+	printf("Online time: %f sec.\n", ((float)cl)/CLOCKS_PER_SEC);
 
 	return FALSE;
 
