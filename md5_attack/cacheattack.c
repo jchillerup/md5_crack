@@ -47,15 +47,12 @@ int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		 * has state *ap *bp *cp *dp. */
 
 		/* Iterate over all m0s */
-		for (b1 = BYTES_BEGIN; b1 < BYTES_END; b1++) {
+		for (b1 = BYTES_BEGIN; b1 <= BYTES_END; b1++) {
 
-			for (b2 = BYTES_BEGIN; b2 < BYTES_END; b2++) {
-				for (b3 = BYTES_BEGIN; b3 < BYTES_END; b3++) {
-					for (b4 = BYTES_BEGIN; b4 < BYTES_END; b4++) {
-						if (m[2] == 0x8042 && m[0] == 0x41414141) {
-							// printf("%.08x %.08x %.08x %.08x %.08x \n", m[0], m[1], m[2], m[3], m[14]);
-						}
-
+			for (b2 = BYTES_BEGIN; b2 <= BYTES_END; b2++) {
+				for (b3 = BYTES_BEGIN; b3 <= BYTES_END; b3++) {
+					for (b4 = BYTES_BEGIN; b4 <= BYTES_END; b4++) {
+					
 						/* Establish current m0 */
 						m[0] = b4 << 24 | b3 << 16 | b2 << 8 | b1;
 

@@ -1,10 +1,10 @@
 ﻿<Properties GitUserInfo="UsingGIT">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/mitmattack.c">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/main.c">
     <Files>
-      <File FileName="md5_attack/main.c" Line="21" Column="52" />
-      <File FileName="md5_attack/md5.c" Line="142" Column="8" />
-      <File FileName="md5_attack/mitmattack.c" Line="69" Column="14" />
+      <File FileName="md5_attack/main.c" Line="18" Column="4" />
+      <File FileName="md5_attack/md5.c" Line="82" Column="23" />
+      <File FileName="md5_attack/mitmattack.c" Line="25" Column="56" />
       <File FileName="md5_attack/naivesearch.c" Line="37" Column="22" />
     </Files>
     <Pads>
@@ -12,7 +12,7 @@
         <State expanded="True">
           <Node name="iterator" expanded="True" />
           <Node name="md5_attack" expanded="True">
-            <Node name="mitmattack.c" selected="True" />
+            <Node name="main.c" selected="True" />
           </Node>
         </State>
       </Pad>
