@@ -31,7 +31,7 @@ int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	for (b9 = BYTES_BEGIN; b9 <= BYTES_END; b9++) {
 
 		float percentage_done = 100* ((float) b9 - BYTES_BEGIN) / BYTES_BASE;
-		printf("  Percentage through the whole space: %.2f\r", percentage_done );
+		//printf("  Percentage through the whole space: %.2f\r", percentage_done );
 
 		/* Reset the target */
 		target.a = a - h0;

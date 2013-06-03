@@ -34,7 +34,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		m[14] = length*8;
 
 		// FORWARD CHAIN
-		printf("  + Calculating forward chain.\n");
+		//printf("  + Calculating forward chain.\n");
 		fptr = forward_chain;
 		for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
 			for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
@@ -52,7 +52,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 
 		// BACKWARD CHAIN
-		printf("  + Calculating backward chain.\n");
+		//printf("  + Calculating backward chain.\n");
 		bptr = backward_chain;
 		for  (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
 			m[2] = 0x00008000 | ba;
@@ -72,7 +72,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 		// ONLINE PHASE
 		cl = clock();
-		printf("  + Online phase.\n");
+		//printf("  + Online phase.\n");
 		bptr = backward_chain;
 		for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
 			md5_state tmp;
