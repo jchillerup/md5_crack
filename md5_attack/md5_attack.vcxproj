@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cacheattack.c" />
+    <ClCompile Include="common.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="md5.c" />
     <ClCompile Include="mitmattack.c" />

@@ -9,8 +9,9 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	clock_t cl;
 	uint32_t *m;
 	uint8_t ba, bb, bc, bd;
-
+	int m1cnt, m1num ;
 	int fsize, bsize, i;
+	float online_time;
 	
 	/* These structures contain the forward and backward strands of MD5 calculation */
 	md5_state *forward_chain, *backward_chain, *fptr, *bptr;
@@ -24,8 +25,12 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	forward_chain  = (md5_state*) calloc(fsize, sizeof(md5_state));
 	backward_chain = (md5_state*) calloc(bsize, sizeof(md5_state));
 
+	online_time = 0;
+	m1num = (int) pow(BYTES_BASE, 4);
+	for (m1cnt = 0; m1cnt < m1num; m1cnt++) {
+	
+	m[1] = get_candidate_word(m1cnt);
 
-	m[1]  = 0x41414141;
 	m[14] = length*8;
 
 	// FORWARD CHAIN
@@ -106,15 +111,22 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 				printf("Found!\n");
 				cl = clock() - cl;
 
-				printf("Online time: %f sec.\n", ((float)cl)/CLOCKS_PER_SEC);
+				online_time += ((float)cl)/CLOCKS_PER_SEC;
+
+				printf("Online time: %f sec.\n", online_time) ;
 
 				return TRUE;
 			}
 		}
 
 	}
+
+	online_time += ((float)cl)/CLOCKS_PER_SEC;
+
+	}
 	cl = clock() - cl;
-	printf("Online time: %f sec.\n", ((float)cl)/CLOCKS_PER_SEC);
+	online_time +=  ((float)cl)/CLOCKS_PER_SEC;
+	printf("Online time: %f sec.\n", online_time);
 
 	return FALSE;
 

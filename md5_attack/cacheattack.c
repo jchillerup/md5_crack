@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "md5.h"
+#include <math.h>
+
+extern int get_candidate_word(int strength);
 
 int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	md5_state target, tmp;
 	uint32_t *m;
+	int m1cnt, m1num ;
 	uint8_t b1, b2, b3, b4;
 	uint8_t b9;
 	int i;
@@ -17,7 +21,11 @@ int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 	/* Initialize the message data structure. */
 	m = (uint32_t *) calloc(16, sizeof(uint32_t));
-	m[1] = 0x41414141;
+	
+	m1num = (int) pow(BYTES_BASE, 4);
+	for (m1cnt = 0; m1cnt < m1num; m1cnt++) {
+	
+	m[1] = get_candidate_word(m1cnt);
 
 
 	for (b9 = BYTES_BEGIN; b9 <= BYTES_END; b9++) {
@@ -70,6 +78,7 @@ int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 				}
 			}
 		}
+	}
 	}
 	free(m);
 	return FALSE;

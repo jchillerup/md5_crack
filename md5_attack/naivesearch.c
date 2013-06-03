@@ -15,15 +15,15 @@ int  naive_search(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	/* Define the length of the message. */
 	m[14] = length*8;
 	
-	for (b1 = 0x20; b1 < 0x7f; b1++) {
+	for (b1 = BYTES_BEGIN; b1 < BYTES_END; b1++) {
 		float percentage_done = 100* ((float) b1-0x20) / 0x7f;
 		printf("  Percentage through the whole space: %.2f\r", percentage_done );
 
-		for (b2 = 0x20; b2 < 0x7f; b2++) {
+		for (b2 = BYTES_BEGIN; b2 < BYTES_END; b2++) {
 
-			for (b3 = 0x20; b3 < 0x7f; b3++) {
+			for (b3 = BYTES_BEGIN; b3 < BYTES_END; b3++) {
 
-				for (b4 = 0x20; b4 < 0x7f; b4++) {
+				for (b4 = BYTES_BEGIN; b4 < BYTES_END; b4++) {
 					md5_state forward_result;
 
 					/* Establish current m0 */

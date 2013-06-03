@@ -1,0 +1,26 @@
+# depslib dependency file v1.0
+1368171891 source:c:\users\jch.symphogen\desktop\speciale\projects\md5_attack\md5_attack\cacheattack.c
+	<stdio.h>
+	<stdlib.h>
+	"md5.h"
+
+1368171891 c:\users\jch.symphogen\desktop\speciale\projects\md5_attack\md5_attack\md5.h
+	<stdint.h>
+
+1369231698 source:c:\users\jch.symphogen\desktop\speciale\projects\md5_attack\md5_attack\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"md5.h"
+	"main.h"
+
+1368171891 c:\users\jch.symphogen\desktop\speciale\projects\md5_attack\md5_attack\main.h
+
+1369217415 source:c:\users\jch.symphogen\desktop\speciale\projects\md5_attack\md5_attack\md5.c
+	<stdio.h>
+	<stdint.h>
+	<stdlib.h>
+	<string.h>
+	"md5.h"
+	<endian.h>
+

@@ -1,8 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "md5.h"
 #include "main.h"
+
+extern int get_candidate_word(int strength);
+
+void get_candidate(int strength, char* target) {
+	char* ptr;
+	uint32_t m1;
+	ptr = target;
+	m1 = get_candidate_word(strength);
+	memcpy(ptr, "AAAA", 4); ptr+=4;
+	memcpy(ptr, &m1, 4); ptr += 4;
+	*ptr = 'A';
+}
 
 
 int main(int argc, char ** argv) {
@@ -12,8 +25,15 @@ int main(int argc, char ** argv) {
 	char * input;
 	int ret = FALSE;
 
-	input = "ZZZZAAAAZ";
+	input = (char*) calloc(11, sizeof(char));
+	get_candidate(3, input);
+
+	printf("Benchmarking with password: %s\n", input);
+
 	test_target = md5(input);
+
+
+
 	// printf("Looking for %.08x %.08x %.08x %.08x\n", test_target.a, test_target.b, test_target.c, test_target.d);
 	/*
 	printf("\nNaively searching...\n");
