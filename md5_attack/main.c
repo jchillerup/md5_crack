@@ -26,7 +26,7 @@ int main(int argc, char ** argv) {
 	int ret = FALSE;
 
 	input = (char*) calloc(11, sizeof(char));
-	get_candidate(3, input);
+	get_candidate(6, input);
 
 	printf("Benchmarking with password: %s\n", input);
 
