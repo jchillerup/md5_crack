@@ -4,7 +4,7 @@
 #define FALSE 0
 
 #define BYTES_BEGIN 'A'	
-#define BYTES_END   'H'
+#define BYTES_END   'G'
 #define BYTES_BASE (BYTES_END-BYTES_BEGIN+1)
 
 extern const uint32_t h0;

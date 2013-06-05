@@ -40,6 +40,7 @@
     <Compile Include="naivesearch.c" />
     <Compile Include="cacheattack.c" />
     <Compile Include="mitmattack.c" />
+    <Compile Include="common.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="md5.h" />

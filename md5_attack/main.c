@@ -17,8 +17,7 @@ void get_candidate(int strength, char* target) {
 	*ptr = 'A';
 }
 
-
-int main(int argc, char ** argv) {
+void benchmark() {
 	md5_state test_target;
 	clock_t cl;
 	int i = 0;
@@ -75,6 +74,59 @@ int main(int argc, char ** argv) {
 	}
 	printf("after %f seconds.\n\n", ((float)cl)/CLOCKS_PER_SEC);
 	
+
+}
+
+uint32_t byteswap(uint32_t i) {
+    char *c = (char *) &i;
+    return * (uint32_t *) (char[]) {c[3], c[2], c[1], c[0] };
+}
+
+void strtomd5(char* string, md5_state* target) {
+	char tmp[8];
+	
+	strncpy(tmp, string, 8);
+	target->a = byteswap(strtol(tmp, NULL, 16));
+	strncpy(tmp, string+8, 8);
+	target->b = byteswap(strtol(tmp, NULL, 16));
+	strncpy(tmp, string+16, 8);
+	target->c = byteswap(strtol(tmp, NULL, 16));
+	strncpy(tmp, string+24, 8);
+	target->d = byteswap(strtol(tmp, NULL, 16));
+	
+	
+}
+
+int main(int argc, char ** argv) {
+	
+	if (argc < 2) {
+		benchmark();
+	} else {
+		clock_t cl;
+		int ret;
+		md5_state target;
+		printf("%s;", argv[1]);
+		
+		strtomd5(argv[1], &target);
+		
+		cl = clock();
+		ret = cache_attack(target.a, target.b, target.c, target.d, 9);
+		cl = clock() - cl;
+		if (ret == 1) {
+			printf("%f;", ret, ((float)cl)/CLOCKS_PER_SEC);
+		} else {
+			printf("ERROR;");
+		}
+		
+		cl = clock();
+		ret = mitm_attack(target.a, target.b, target.c, target.d, 9);
+		cl = clock() - cl;
+		if (ret == 1) {
+			printf("%f\n", ret, ((float)cl)/CLOCKS_PER_SEC);
+		} else {
+			printf("ERROR\n");
+		}
+	}
 	
 
 #ifdef _WIN32
