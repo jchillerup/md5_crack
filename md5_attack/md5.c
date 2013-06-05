@@ -109,9 +109,6 @@ void md5_round_backwards(md5_state *state_ptr, uint32_t* m, int r) {
 	new_a -= m[m_idx[r]];
 	
 	state_ptr->a = new_a;
-
-	
-	//printf("%.08x %.08x %.08x %.08x\n", state_ptr->a, state_ptr->b, state_ptr->c, state_ptr->d);
 }
 
 md5_state md5(char * input)
@@ -166,27 +163,27 @@ void md5_truncated(md5_state* state_ptr, uint32_t * m, int stop_after_round)
 
 }
 
-uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
-  uint32_t f_val;
-	
-  if      (r < 16) f_val = F(b, c, d);
-  else if (r < 32) f_val = G(b, c, d);
-  else if (r < 48) f_val = H(b, c, d);
-  else             f_val = I(b, c, d);
-  
-  a += f_val;
-  a += k[r];
-  a += m[m_idx[r]];
-	
-  ROTATE_LEFT(a, s[r]);
-	
-  a += b;
 
-  return a;
+
+uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
+	uint32_t f_val;
+	
+	if      (r < 16) f_val = F(b, c, d);
+	else if (r < 32) f_val = G(b, c, d);
+	else if (r < 48) f_val = H(b, c, d);
+	else             f_val = I(b, c, d);
+  
+	a += f_val + k[r] + m[m_idx[r]];
+	
+	ROTATE_LEFT(a, s[r]);
+	
+	a += b;
+
+	return a;
 }
 
+
 void md5_0to48_fast(md5_state* s, uint32_t * m) {
-	uint32_t tmp;
 	register uint32_t a, b, c, d;
 	
 	a = h0;
@@ -195,7 +192,7 @@ void md5_0to48_fast(md5_state* s, uint32_t * m) {
 	d = h3;
         
 	a = md5_round_noswap(a, b, c, d, m, 0);
-	d = md5_round_noswap(d, a, b, c, m, 1);
+	d = md5_round_noswap(d, a, b, c, m, 1);	
 	c = md5_round_noswap(c, d, a, b, m, 2);
 	b = md5_round_noswap(b, c, d, a, m, 3);
     a = md5_round_noswap(a, b, c, d, m, 4);
@@ -251,6 +248,30 @@ void md5_0to48_fast(md5_state* s, uint32_t * m) {
 }
 
 
+uint32_t md5_round_backwards_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
+	uint32_t f_val;
+	
+	if      (r < 16) f_val = F(c, d, a);
+	else if (r < 32) f_val = G(c, d, a);
+	else if (r < 48) f_val = H(c, d, a);
+	else             f_val = I(c, d, a);
+	
+/*
+	new_a = state_ptr->a - state_ptr->b;
+	ROTATE_RIGHT(new_a, s[r]);
+	
+	new_a -= f_val;
+	new_a -= k[r];
+	new_a -= m[m_idx[r]];
+	
+	state_ptr->a = new_a;
+*/
+}
+
+md5_48to1_fast(md5_state* s, uint32_t * m) {
+	register uint32_t a, b, c, d;
+
+}
 
 
 /*

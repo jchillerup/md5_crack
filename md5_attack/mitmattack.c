@@ -110,7 +110,6 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 					md5_round_backwards(&tmp, m, i);
 				}
 
-
 				if (tmp.a == 0x98badcfe && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == 0xefcdab89) {
 					return TRUE;
 				}
