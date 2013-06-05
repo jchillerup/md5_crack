@@ -5,6 +5,11 @@
 #include "md5.h"
 #include <time.h>
 
+typedef struct  {
+	uint32_t b;
+	uint32_t c;
+} md5_state_reduced;
+
 int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	//clock_t cl;
 	uint32_t *m;
@@ -12,17 +17,19 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	int m1cnt, m1num ;
 	int fsize, bsize, i;
 	float online_time;
+	md5_state tmp;
 
 	/* These structures contain the forward and backward strands of MD5 calculation */
-	md5_state *forward_chain, *backward_chain, *fptr, *bptr;
+	md5_state *backward_chain, *bptr;
+	md5_state_reduced  *forward_chain, *fptr;
 
-	fsize = (int) pow(BYTES_END - BYTES_BEGIN + 1, 4);
-	bsize = (int) pow(BYTES_END - BYTES_BEGIN + 1, 1);
+	fsize = (int) pow(BYTES_BASE, 4);
+	bsize = (int) pow(BYTES_BASE, 1);
 
 	/* Allocs, be sure to free these */
 	m = (uint32_t*) calloc(16, sizeof(uint32_t));
 
-	forward_chain  = (md5_state*) calloc(fsize, sizeof(md5_state));
+	forward_chain  = (md5_state_reduced*) calloc(fsize, sizeof(md5_state_reduced));
 	backward_chain = (md5_state*) calloc(bsize, sizeof(md5_state));
 
 	online_time = 0;
@@ -54,21 +61,21 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 		fptr = forward_chain;
 		for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
 			for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
-				
-				//fptr = forward_chain;
-							
 				for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
 					for (bd = BYTES_BEGIN; bd <= BYTES_END; bd++) {
 						m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
 
-						md5_truncated(fptr, m, 1);
+						md5_truncated(&tmp, m, 1);
+
+						fptr->b = tmp.b;
+						fptr->c = tmp.c;
 
 						fptr++;
 					}
 				}
+				
 			}
 		}
-
 
 		// ONLINE PHASE
 		bptr = backward_chain;
@@ -104,12 +111,14 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 				}
 
 
-				if (tmp.a == fptr->a && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == fptr->d) {
+				if (tmp.a == 0x98badcfe && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == 0xefcdab89) {
 					return TRUE;
 				}
 			}
 
 		}
+
+		
 	}
 	return FALSE;
 
