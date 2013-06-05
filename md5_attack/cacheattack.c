@@ -65,7 +65,7 @@ int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 						m[0] = b4 << 24 | b3 << 16 | b2 << 8 | b1;
 
 						/* Calculate forward until after round 48 */
-						md5_truncated(&tmp, m, 48);
+						md5_0to48_fast(&tmp, m);
 
 						if (target.a == tmp.a &&
 							target.b == tmp.b &&

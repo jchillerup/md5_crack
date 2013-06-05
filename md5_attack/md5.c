@@ -84,52 +84,6 @@ void md5_round(md5_state *state_ptr, uint32_t* m, int r) {
 	state_ptr->b = new_b + (state_ptr->c);
 }
 
-void md5_round_noswap(md5_state *state_ptr, uint32_t *m, int r) {
-	uint32_t f_val;
-	uint32_t *a, *b, *c, *d;
-	
-	switch (r % 4) {
-	case 0:
-		a = &(state_ptr->a);
-		b = &(state_ptr->b);
-		c = &(state_ptr->c);
-		d = &(state_ptr->d);
-		break;
-	case 1:
-		a = &(state_ptr->d);
-		b = &(state_ptr->a);
-		c = &(state_ptr->b);
-		d = &(state_ptr->c);
-		break;
-	case 2:
-		a = &(state_ptr->c);
-		b = &(state_ptr->d);
-		c = &(state_ptr->a);
-		d = &(state_ptr->b);
-		break;
-	case 3:
-		a = &(state_ptr->b);
-		b = &(state_ptr->c);
-		c = &(state_ptr->d);
-		d = &(state_ptr->a);
-		break;
-	}
-			
-	if      (r < 16) f_val = F(*b, *c, *d);
-	else if (r < 32) f_val = G(*b, *c, *d);
-	else if (r < 48) f_val = H(*b, *c, *d);
-	else             f_val = I(*b, *c, *d);
-	
-	*a += f_val;
-	*a += k[r];
-	*a += m[m_idx[r]];
-	
-	ROTATE_LEFT(*a, s[r]);
-	
-	*a += *b;
-	
-	//printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
-}
 
 void md5_round_backwards(md5_state *state_ptr, uint32_t* m, int r) {
 	uint32_t f_val;
@@ -185,13 +139,6 @@ md5_state md5(char * input)
 	// Calculate the hash value
 	md5_truncated(&ret, m, 63);
 
-#ifdef DEBUGS
-	for (i = 0; i<16; i++) {
-		printf("%.2x ", m[i]);
-	}
-	printf("\n");
-#endif
-
 	ret.a += h0;
 	ret.b += h1;
 	ret.c += h2;
@@ -218,6 +165,97 @@ void md5_truncated(md5_state* state_ptr, uint32_t * m, int stop_after_round)
 	}
 
 }
+
+uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
+  uint32_t f_val;
+	
+  if      (r < 16) f_val = F(b, c, d);
+  else if (r < 32) f_val = G(b, c, d);
+  else if (r < 48) f_val = H(b, c, d);
+  else             f_val = I(b, c, d);
+  
+  a += f_val;
+  a += k[r];
+  a += m[m_idx[r]];
+	
+  ROTATE_LEFT(a, s[r]);
+	
+  a += b;
+
+  return a;
+}
+
+void md5_0to48_fast(md5_state* s, uint32_t * m) {
+	uint32_t tmp;
+	register uint32_t a, b, c, d;
+	
+	a = h0;
+	b = h1;
+	c = h2;
+	d = h3;
+        
+	a = md5_round_noswap(a, b, c, d, m, 0);
+	d = md5_round_noswap(d, a, b, c, m, 1);
+	c = md5_round_noswap(c, d, a, b, m, 2);
+	b = md5_round_noswap(b, c, d, a, m, 3);
+    a = md5_round_noswap(a, b, c, d, m, 4);
+    d = md5_round_noswap(d, a, b, c, m, 5);
+    c = md5_round_noswap(c, d, a, b, m, 6);
+    b = md5_round_noswap(b, c, d, a, m, 7);
+	a = md5_round_noswap(a, b, c, d, m, 8);
+	d = md5_round_noswap(d, a, b, c, m, 9);
+	c = md5_round_noswap(c, d, a, b, m, 10);
+	b = md5_round_noswap(b, c, d, a, m, 11);
+	a = md5_round_noswap(a, b, c, d, m, 12);
+	d = md5_round_noswap(d, a, b, c, m, 13);
+	c = md5_round_noswap(c, d, a, b, m, 14);
+	b = md5_round_noswap(b, c, d, a, m, 15);
+	a = md5_round_noswap(a, b, c, d, m, 16);
+	d = md5_round_noswap(d, a, b, c, m, 17);
+	c = md5_round_noswap(c, d, a, b, m, 18);
+	b = md5_round_noswap(b, c, d, a, m, 19);
+	a = md5_round_noswap(a, b, c, d, m, 20);
+	d = md5_round_noswap(d, a, b, c, m, 21);
+	c = md5_round_noswap(c, d, a, b, m, 22);
+	b = md5_round_noswap(b, c, d, a, m, 23);
+	a = md5_round_noswap(a, b, c, d, m, 24);
+	d = md5_round_noswap(d, a, b, c, m, 25);
+	c = md5_round_noswap(c, d, a, b, m, 26);
+	b = md5_round_noswap(b, c, d, a, m, 27);
+	a = md5_round_noswap(a, b, c, d, m, 28);
+	d = md5_round_noswap(d, a, b, c, m, 29);
+	c = md5_round_noswap(c, d, a, b, m, 30);
+	b = md5_round_noswap(b, c, d, a, m, 31);
+	a = md5_round_noswap(a, b, c, d, m, 32);
+	d = md5_round_noswap(d, a, b, c, m, 33);
+	c = md5_round_noswap(c, d, a, b, m, 34);
+	b = md5_round_noswap(b, c, d, a, m, 35);
+	a = md5_round_noswap(a, b, c, d, m, 36);
+	d = md5_round_noswap(d, a, b, c, m, 37);
+	c = md5_round_noswap(c, d, a, b, m, 38);
+	b = md5_round_noswap(b, c, d, a, m, 39);
+	a = md5_round_noswap(a, b, c, d, m, 40);
+	d = md5_round_noswap(d, a, b, c, m, 41);
+	c = md5_round_noswap(c, d, a, b, m, 42);
+	b = md5_round_noswap(b, c, d, a, m, 43);
+	a = md5_round_noswap(a, b, c, d, m, 44);
+	d = md5_round_noswap(d, a, b, c, m, 45);
+	c = md5_round_noswap(c, d, a, b, m, 46);
+	b = md5_round_noswap(b, c, d, a, m, 47);
+	a = md5_round_noswap(a, b, c, d, m, 48);
+
+	s->a = d;
+	s->d = c;
+	s->c = b;
+	s->b = a;
+}
+
+
+
+
+/*
+
+THIS IS KEPT FOR UNTANGLING POST-PARTIAL HASHING:
 
 void md5_truncated_noswap(md5_state* state_ptr, uint32_t * m, int stop_after_round) {
 	int i;
@@ -262,4 +300,4 @@ void md5_truncated_noswap(md5_state* state_ptr, uint32_t * m, int stop_after_rou
 		break;
 	}	
 }
-
+*/
