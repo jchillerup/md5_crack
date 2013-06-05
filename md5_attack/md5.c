@@ -27,12 +27,12 @@
 #define ROTATE_LEFT(w, s)  (w = (w << s) | (w >> (32 - s)))
 #define ROTATE_RIGHT(w, s) (w = (w >> s) | (w << (32 - s)))
 
-short s[] = { 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+const short s[] = { 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
 			  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
 			  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
 			  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21 };
 
-uint32_t k[] = 
+const uint32_t k[] = 
     { 0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
       0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
       0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8, 
@@ -82,6 +82,53 @@ void md5_round(md5_state *state_ptr, uint32_t* m, int r) {
 	state_ptr->b = old_a;
 	
 	state_ptr->b = new_b + (state_ptr->c);
+}
+
+void md5_round_noswap(md5_state *state_ptr, uint32_t *m, int r) {
+	uint32_t f_val;
+	uint32_t *a, *b, *c, *d;
+	
+	switch (r % 4) {
+	case 0:
+		a = &(state_ptr->a);
+		b = &(state_ptr->b);
+		c = &(state_ptr->c);
+		d = &(state_ptr->d);
+		break;
+	case 1:
+		a = &(state_ptr->d);
+		b = &(state_ptr->a);
+		c = &(state_ptr->b);
+		d = &(state_ptr->c);
+		break;
+	case 2:
+		a = &(state_ptr->c);
+		b = &(state_ptr->d);
+		c = &(state_ptr->a);
+		d = &(state_ptr->b);
+		break;
+	case 3:
+		a = &(state_ptr->b);
+		b = &(state_ptr->c);
+		c = &(state_ptr->d);
+		d = &(state_ptr->a);
+		break;
+	}
+			
+	if      (r < 16) f_val = F(*b, *c, *d);
+	else if (r < 32) f_val = G(*b, *c, *d);
+	else if (r < 48) f_val = H(*b, *c, *d);
+	else             f_val = I(*b, *c, *d);
+	
+	*a += f_val;
+	*a += k[r];
+	*a += m[m_idx[r]];
+	
+	ROTATE_LEFT(*a, s[r]);
+	
+	*a += *b;
+	
+	//printf("%.08x %.08x %.08x %.08x\n", *a, *b, *c, *d);
 }
 
 void md5_round_backwards(md5_state *state_ptr, uint32_t* m, int r) {
@@ -158,6 +205,7 @@ md5_state md5(char * input)
 void md5_truncated(md5_state* state_ptr, uint32_t * m, int stop_after_round)
 {
 	int i;
+	uint32_t tmp, tmp2;
 
 	state_ptr->a = h0;
 	state_ptr->b = h1;
@@ -168,4 +216,50 @@ void md5_truncated(md5_state* state_ptr, uint32_t * m, int stop_after_round)
 	for (i = 0; i <= stop_after_round; i++) {
 		md5_round(state_ptr, m, i);
 	}
+
 }
+
+void md5_truncated_noswap(md5_state* state_ptr, uint32_t * m, int stop_after_round) {
+	int i;
+	uint32_t tmp, tmp2;
+
+	state_ptr->a = h0;
+	state_ptr->b = h1;
+	state_ptr->c = h2;
+	state_ptr->d = h3;
+
+	// Calculate the hash value
+	for (i = 0; i <= stop_after_round; i++) {
+		md5_round_noswap(state_ptr, m, i);
+	}
+	
+	// Reassemble the state
+	switch(stop_after_round % 4) {
+	case 0:
+		tmp = state_ptr->a;
+		state_ptr->a = state_ptr->d;
+		state_ptr->d = state_ptr->c;
+		state_ptr->c = state_ptr->b;
+		state_ptr->b = tmp;
+		break;
+	case 1:
+		tmp = state_ptr->b;
+		tmp2 = state_ptr->a;
+		
+		state_ptr->a = state_ptr->c;
+		state_ptr->b = state_ptr->d;
+		state_ptr->c = tmp2;
+		state_ptr->d = tmp;
+		break;
+	case 2:
+		tmp = state_ptr->a;
+		state_ptr->a = state_ptr->b;
+		state_ptr->b = state_ptr->c;
+		state_ptr->c = state_ptr->d;
+		state_ptr->d = tmp;
+		break;
+	case 3:
+		break;
+	}	
+}
+

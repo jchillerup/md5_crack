@@ -32,9 +32,9 @@ void benchmark() {
 	test_target = md5(input);
 
 
+	printf("Looking for %.08x %.08x %.08x %.08x\n", test_target.a, test_target.b, test_target.c, test_target.d);
 
-	// printf("Looking for %.08x %.08x %.08x %.08x\n", test_target.a, test_target.b, test_target.c, test_target.d);
-	/*
+		/*
 	printf("\nNaively searching...\n");
 	cl = clock();
 	ret = naive_search(test_target.a, test_target.b,  test_target.c, test_target.d, 4);
@@ -128,7 +128,6 @@ int main(int argc, char ** argv) {
 		}
 	}
 	
-
 #ifdef _WIN32
 	scanf("%d", &input);
 #endif

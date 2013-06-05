@@ -33,26 +33,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 		m[14] = length*8;
 
-		// FORWARD CHAIN
-		//printf("  + Calculating forward chain.\n");
-		fptr = forward_chain;
-		for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
-			for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
-				for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
-					for (bd = BYTES_BEGIN; bd <= BYTES_END; bd++) {
-						m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
-
-						md5_truncated(fptr, m, 1);
-
-						fptr++;
-					}
-				}
-			}
-		}
-
-
 		// BACKWARD CHAIN
-		//printf("  + Calculating backward chain.\n");
 		bptr = backward_chain;
 		for  (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
 			m[2] = 0x00008000 | ba;
@@ -69,10 +50,27 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 			bptr++;
 		}
 
+		// FORWARD CHAIN
+		fptr = forward_chain;
+		for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
+			for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
+				
+				//fptr = forward_chain;
+							
+				for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
+					for (bd = BYTES_BEGIN; bd <= BYTES_END; bd++) {
+						m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
+
+						md5_truncated(fptr, m, 1);
+
+						fptr++;
+					}
+				}
+			}
+		}
+
 
 		// ONLINE PHASE
-		//cl = clock();
-		//printf("  + Online phase.\n");
 		bptr = backward_chain;
 		for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
 			md5_state tmp;
@@ -107,25 +105,12 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 
 				if (tmp.a == fptr->a && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == fptr->d) {
-					// If it does, we found the preimage.
-					//cl = clock() - cl;
-
-					//online_time += ((float)cl)/CLOCKS_PER_SEC;
-
-					//printf("Online time: %f sec.\n", online_time) ;
-
 					return TRUE;
 				}
 			}
 
 		}
-		//cl = clock() - cl;
-		//online_time += ((float)cl)/CLOCKS_PER_SEC;
 	}
-	//cl = clock() - cl;
-	//online_time +=  ((float)cl)/CLOCKS_PER_SEC;
-	//printf("Online time: %f sec.\n", online_time);
-
 	return FALSE;
 
 }
