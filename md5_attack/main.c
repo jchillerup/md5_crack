@@ -18,10 +18,10 @@ void get_candidate(int strength, char* target) {
 }
 
 void benchmark() {
+	char * input;
 	md5_state test_target;
 	clock_t cl;
 	int i = 0;
-	char * input;
 	int ret = FALSE;
 
 	input = (char*) calloc(11, sizeof(char));
@@ -78,8 +78,14 @@ void benchmark() {
 }
 
 uint32_t byteswap(uint32_t i) {
-    char *c = (char *) &i;
-    return * (uint32_t *) (char[]) {c[3], c[2], c[1], c[0] };
+    uint8_t c1, c2, c3, c4;    
+ 
+    c1 = i & 255;
+    c2 = (i >> 8) & 255;
+    c3 = (i >> 16) & 255;
+    c4 = (i >> 24) & 255;
+ 
+    return ((uint32_t)c1 << 24) + ((uint32_t)c2 << 16) + ((uint32_t)c3 << 8) + c4;
 }
 
 void strtomd5(char* string, md5_state* target) {
@@ -98,6 +104,7 @@ void strtomd5(char* string, md5_state* target) {
 }
 
 int main(int argc, char ** argv) {
+	char * input;
 	
 	if (argc < 2) {
 		benchmark();
