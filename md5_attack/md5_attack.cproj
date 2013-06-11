@@ -30,7 +30,7 @@
     <OutputPath>bin\Release</OutputPath>
     <DefineSymbols>MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
-    <OptimizationLevel>3</OptimizationLevel>
+    <OptimizationLevel>2</OptimizationLevel>
     <OutputName>md5_attack</OutputName>
     <CompileTarget>Bin</CompileTarget>
     <CustomCommands>
@@ -38,8 +38,6 @@
         <Command type="Build" />
       </CustomCommands>
     </CustomCommands>
-    <ExtraCompilerArguments>-mtune=native
--march=native</ExtraCompilerArguments>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="main.c" />

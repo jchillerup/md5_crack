@@ -83,33 +83,26 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 			// So we have the value for this particular value for m2. Check
 			// if it matches a value from m0:
-			for (fptr = forward_chain; fptr < (forward_chain + fsize); fptr++) {
-				int fpl;
-				uint32_t ba, bb, bc, bd;
-
+			fptr = forward_chain; 
+			
+			for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
+			for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
+			for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
+			for (bd = BYTES_BEGIN; bd <= BYTES_END; bd++) {
 				tmp.a = bptr->a;
 				tmp.b = bptr->b;
 				tmp.c = bptr->c;
 				tmp.d = bptr->d;
 
-				fpl = fptr - forward_chain;	
-
-				// Update m[0] and m[2] to corresponding values in base-BYTES_LENGTH
-				bd = fpl % BYTES_BASE; fpl /= BYTES_BASE;
-				bc = fpl % BYTES_BASE; fpl /= BYTES_BASE;
-				bb = fpl % BYTES_BASE; fpl /= BYTES_BASE;
-				ba = fpl % BYTES_BASE; fpl /= BYTES_BASE;
-
-				assert(fpl == 0);
-
-				m[0] = (BYTES_BEGIN + bd) << 24 | (BYTES_BEGIN + bc) << 16 | (BYTES_BEGIN + bb) << 8 | (BYTES_BEGIN + ba);
-
+				m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
 				md5_48to1_fast(&tmp, m);
 
 				if (tmp.a == 0x98badcfe && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == 0xefcdab89) {
 					return TRUE;
 				}
-			}
+					
+				fptr++;
+			}}}}	
 
 		}
 				
