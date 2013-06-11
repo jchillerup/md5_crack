@@ -182,6 +182,23 @@ uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint
 	return a;
 }
 
+uint32_t md5_round_backwards_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
+	uint32_t f_val, new_a;
+	
+	if      (r < 16) f_val = F(c, d, a);
+	else if (r < 32) f_val = G(c, d, a);
+	else if (r < 48) f_val = H(c, d, a);
+	else             f_val = I(c, d, a);
+	
+	new_a = b - c;
+	ROTATE_RIGHT(new_a, s[r]);
+	
+	new_a -= f_val;
+	new_a -= k[r];
+	new_a -= m[m_idx[r]];
+	
+	return new_a;
+}
 
 void md5_0to48_fast(md5_state* s, uint32_t * m) {
 	register uint32_t a, b, c, d;
@@ -247,78 +264,60 @@ void md5_0to48_fast(md5_state* s, uint32_t * m) {
 	s->b = a;
 }
 
-
-uint32_t md5_round_backwards_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
-	uint32_t f_val;
-	
-	if      (r < 16) f_val = F(c, d, a);
-	else if (r < 32) f_val = G(c, d, a);
-	else if (r < 48) f_val = H(c, d, a);
-	else             f_val = I(c, d, a);
-	
-/*
-	new_a = state_ptr->a - state_ptr->b;
-	ROTATE_RIGHT(new_a, s[r]);
-	
-	new_a -= f_val;
-	new_a -= k[r];
-	new_a -= m[m_idx[r]];
-	
-	state_ptr->a = new_a;
-*/
-}
-
 md5_48to1_fast(md5_state* s, uint32_t * m) {
 	register uint32_t a, b, c, d;
-
-}
-
-
-/*
-
-THIS IS KEPT FOR UNTANGLING POST-PARTIAL HASHING:
-
-void md5_truncated_noswap(md5_state* state_ptr, uint32_t * m, int stop_after_round) {
-	int i;
-	uint32_t tmp, tmp2;
-
-	state_ptr->a = h0;
-	state_ptr->b = h1;
-	state_ptr->c = h2;
-	state_ptr->d = h3;
-
-	// Calculate the hash value
-	for (i = 0; i <= stop_after_round; i++) {
-		md5_round_noswap(state_ptr, m, i);
-	}
+	a = s->b; b = s->c; c = s->d; d = s->a;
+	a = md5_round_backwards_noswap(d, a, b, c, m, 48); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 47); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 46); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 45); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 44); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 43); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 42); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 41); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 40); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 39); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 38); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 37); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 36); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 35); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 34); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 33); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 32); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 31); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 30); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 29); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 28); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 27); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 26); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 25); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 24); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 23); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 22); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 21); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 20); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 19); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 18); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 17); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 16); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 15); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 14); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 13); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 12); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 11); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 10); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 9); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 8); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 7); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 6); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 5); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 4); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 3); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 2); /* state: c d a b*/
 	
-	// Reassemble the state
-	switch(stop_after_round % 4) {
-	case 0:
-		tmp = state_ptr->a;
-		state_ptr->a = state_ptr->d;
-		state_ptr->d = state_ptr->c;
-		state_ptr->c = state_ptr->b;
-		state_ptr->b = tmp;
-		break;
-	case 1:
-		tmp = state_ptr->b;
-		tmp2 = state_ptr->a;
-		
-		state_ptr->a = state_ptr->c;
-		state_ptr->b = state_ptr->d;
-		state_ptr->c = tmp2;
-		state_ptr->d = tmp;
-		break;
-	case 2:
-		tmp = state_ptr->a;
-		state_ptr->a = state_ptr->b;
-		state_ptr->b = state_ptr->c;
-		state_ptr->c = state_ptr->d;
-		state_ptr->d = tmp;
-		break;
-	case 3:
-		break;
-	}	
+	s->a = c;
+	s->b = d;
+	s->c = a;
+	s->d = b;
 }
-*/
+

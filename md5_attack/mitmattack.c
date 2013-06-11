@@ -76,7 +76,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 				
 			}
 		}
-
+		
 		// ONLINE PHASE
 		bptr = backward_chain;
 		for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
@@ -106,9 +106,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 				m[0] = (BYTES_BEGIN + bd) << 24 | (BYTES_BEGIN + bc) << 16 | (BYTES_BEGIN + bb) << 8 | (BYTES_BEGIN + ba);
 
-				for (i = 48; i > 1; i--) {
-					md5_round_backwards(&tmp, m, i);
-				}
+				md5_48to1_fast(&tmp, m);
 
 				if (tmp.a == 0x98badcfe && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == 0xefcdab89) {
 					return TRUE;
@@ -116,6 +114,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 			}
 
 		}
+				
 	}
 	return FALSE;
 

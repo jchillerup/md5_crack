@@ -17,6 +17,23 @@ void get_candidate(int strength, char* target) {
 	*ptr = 'A';
 }
 
+void test_backwards() {	
+	int i;
+	
+	md5_state tmp;
+	uint32_t* m = (uint32_t*) calloc(16, sizeof(uint32_t));
+	uint32_t a, b, c, d;
+	
+	md5_truncated(&tmp, m, 48);    
+	for (i = 48; i >= 2; i--) {
+		md5_round_backwards(&tmp, m, i);
+	}
+	printf("%.08x %.08x %.08x %.08x\n", tmp.a, tmp.b, tmp.c, tmp.d);	
+	md5_truncated(&tmp, m, 48);
+	md5_48to1_fast(&tmp, m);
+	printf("%.08x %.08x %.08x %.08x\n", tmp.a, tmp.b, tmp.c, tmp.d);
+}
+
 void benchmark() {
 	char * input;
 	md5_state test_target;
@@ -107,6 +124,7 @@ int main(int argc, char ** argv) {
 	char * input;
 	
 	if (argc < 2) {
+		//test_backwards();
 		benchmark();
 	} else {
 		clock_t cl;
