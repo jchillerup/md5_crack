@@ -174,30 +174,25 @@ uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint
 	else             f_val = I(b, c, d);
   
 	a += f_val + k[r] + m[m_idx[r]];
-	
 	ROTATE_LEFT(a, s[r]);
-	
 	a += b;
 
 	return a;
 }
 
 uint32_t md5_round_backwards_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
-	uint32_t f_val, new_a;
+	uint32_t f_val, new_b;
 	
 	if      (r < 16) f_val = F(c, d, a);
 	else if (r < 32) f_val = G(c, d, a);
 	else if (r < 48) f_val = H(c, d, a);
 	else             f_val = I(c, d, a);
 	
-	new_a = b - c;
-	ROTATE_RIGHT(new_a, s[r]);
+	new_b = b - c;
+	ROTATE_RIGHT(new_b, s[r]);
+	new_b -= f_val + k[r] + m[m_idx[r]]; /* The additions are because of the -= */
 	
-	new_a -= f_val;
-	new_a -= k[r];
-	new_a -= m[m_idx[r]];
-	
-	return new_a;
+	return new_b;
 }
 
 void md5_0to48_fast(md5_state* s, uint32_t * m) {
@@ -264,7 +259,7 @@ void md5_0to48_fast(md5_state* s, uint32_t * m) {
 	s->b = a;
 }
 
-md5_48to1_fast(md5_state* s, uint32_t * m) {
+void md5_48to1_fast(md5_state* s, uint32_t * m) {
 	register uint32_t a, b, c, d;
 	a = s->b; b = s->c; c = s->d; d = s->a;
 	a = md5_round_backwards_noswap(d, a, b, c, m, 48); /* state: a b c d*/
