@@ -50,9 +50,7 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 			bptr->c = c - h2;
 			bptr->d = d - h3;
 
-			for (i = 63; i > 48; i--) {
-				md5_round_backwards(bptr, m, i);
-			}
+			md5_64to48_fast(bptr,m);
 
 			bptr++;
 		}

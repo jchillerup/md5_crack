@@ -259,6 +259,35 @@ void md5_0to48_fast(md5_state* s, uint32_t * m) {
 	s->b = a;
 }
 
+void md5_64to48_fast(md5_state* s, uint32_t * m) {
+	register uint32_t a, b, c, d;
+	
+	a = s->a;
+	b = s->b;
+	c = s->c;
+	d = s->d;
+	b = md5_round_backwards_noswap(a, b, c, d, m, 63); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 62); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 61); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 60); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 59); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 58); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 57); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 56); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 55); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 54); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 53); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 52); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 51); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 50); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 49); /* state: d a b c*/
+	
+	s->a = d;
+	s->b = a;
+	s->c = b;
+	s->d = c;
+}
+
 void md5_48to1_fast(md5_state* s, uint32_t * m) {
 	register uint32_t a, b, c, d;
 	a = s->b; b = s->c; c = s->d; d = s->a;

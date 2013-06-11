@@ -30,9 +30,16 @@
     <OutputPath>bin\Release</OutputPath>
     <DefineSymbols>MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
-    <OptimizationLevel>2</OptimizationLevel>
+    <OptimizationLevel>3</OptimizationLevel>
     <OutputName>md5_attack</OutputName>
     <CompileTarget>Bin</CompileTarget>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Build" />
+      </CustomCommands>
+    </CustomCommands>
+    <ExtraCompilerArguments>-mtune=native
+-march=native</ExtraCompilerArguments>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="main.c" />
@@ -49,5 +56,8 @@
     <None Include="md5_attack.vcxproj" />
     <None Include="md5_attack.vcxproj.filters" />
     <None Include="md5_attack.vcxproj.user" />
+    <None Include="md5_attack.cbp" />
+    <None Include="md5_attack.depend" />
+    <None Include="md5_attack.layout" />
   </ItemGroup>
 </Project>

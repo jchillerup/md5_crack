@@ -27,7 +27,6 @@ int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	
 	m[1] = get_candidate_word(m1cnt);
 
-
 	for (b9 = BYTES_BEGIN; b9 <= BYTES_END; b9++) {
 
 		float percentage_done = 100* ((float) b9 - BYTES_BEGIN) / BYTES_BASE;
@@ -47,9 +46,7 @@ int  cache_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 		/* Calculate backwards and store the result */
 		/* (note that m[0] is not of any importance during these calculations) */
-		for (i = 63; i > 48; i--) {
-			md5_round_backwards(&target, m, i);
-		}
+		md5_64to48_fast(&target,m);
 
 		/* At this point, we're looking for a value that after round 48 
 		 * has state *ap *bp *cp *dp. */
