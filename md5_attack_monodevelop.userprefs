@@ -4,7 +4,7 @@
     <Files>
       <File FileName="md5_attack/main.c" Line="131" Column="6" />
       <File FileName="md5_attack/md5.c" Line="285" Column="10" />
-      <File FileName="md5_attack/mitmattack.c" Line="93" Column="2" />
+      <File FileName="md5_attack/mitmattack.c" Line="77" Column="3" />
       <File FileName="md5_attack/naivesearch.c" Line="37" Column="22" />
       <File FileName="md5_attack/cacheattack.c" Line="49" Column="26" />
     </Files>
