@@ -69,6 +69,8 @@ int main(int argc, char ** argv) {
 		
 		strtomd5(argv[4], &target);
 		
+		printf("Looking for %.08x %.08x %.08x %.08x\n", target.a, target.b, target.c, target.d);
+
 		bytes_begin = argv[2][0];
 		bytes_end   = argv[3][0];
 
@@ -83,8 +85,8 @@ int main(int argc, char ** argv) {
 			ret = mitm_attack(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
 			break;
 		}
+		printf("%d", ret);
 	}
 	
-
 	return(EXIT_SUCCESS);
 }
