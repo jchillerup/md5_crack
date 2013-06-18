@@ -5,13 +5,18 @@
 #include "md5.h"
 #include "main.h"
 
-extern int get_candidate_word(int strength);
+extern int        get_candidate_word(char bytes_begin, int bytes_base, int strength);
+extern int        cache_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length);
+extern int        mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length);
+extern int        naive_search(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length);
+extern void       strtomd5(char* string, md5_state* target);
+extern uint32_t   byteswap(uint32_t i);
 
-void get_candidate(int strength, char* target) {
+void get_candidate(char bytes_begin, int bytes_base, int strength, char* target) {
 	char* ptr;
 	uint32_t m1;
 	ptr = target;
-	m1 = get_candidate_word(strength);
+	m1 = get_candidate_word(bytes_begin, bytes_base, strength);
 	memcpy(ptr, "AAAA", 4); ptr+=4;
 	memcpy(ptr, &m1, 4); ptr += 4;
 	*ptr = 'A';
@@ -20,52 +25,37 @@ void get_candidate(int strength, char* target) {
 void benchmark() {
 	char * input;
 	md5_state test_target;
-	clock_t cl;
 	int i = 0;
 	int ret = FALSE;
 
+	char bytes_begin = 'A';
+	char bytes_end   = 'G';
+	int bytes_base   = bytes_end - bytes_begin;
+
 	input = (char*) calloc(11, sizeof(char));
-	get_candidate(450, input);
+	get_candidate(bytes_begin, bytes_base, 10, input);
 
 	printf("Benchmarking with password: %s\n", input);
 
 	test_target = md5(input);
 
-
 	printf("Looking for %.08x %.08x %.08x %.08x\n", test_target.a, test_target.b, test_target.c, test_target.d);
 
-	ret = naive_search(test_target.a, test_target.b,  test_target.c, test_target.d, 9); printf("%d\n", ret);
-	ret = cache_attack(test_target.a, test_target.b,  test_target.c, test_target.d, 9); printf("%d\n", ret);
-	ret = mitm_attack(test_target.a, test_target.b,  test_target.c, test_target.d, 9); printf("%d\n", ret);
+	ret = naive_search(bytes_begin, bytes_end, test_target.a, test_target.b,  test_target.c, test_target.d, 9); printf("%d\n", ret);
+	ret = cache_attack(bytes_begin, bytes_end, test_target.a, test_target.b,  test_target.c, test_target.d, 9); printf("%d\n", ret);
+	ret = mitm_attack(bytes_begin, bytes_end, test_target.a, test_target.b,  test_target.c, test_target.d, 9); printf("%d\n", ret);
 }
 
-uint32_t byteswap(uint32_t i) {
-    uint8_t c1, c2, c3, c4;    
- 
-    c1 = i & 255;
-    c2 = (i >> 8) & 255;
-    c3 = (i >> 16) & 255;
-    c4 = (i >> 24) & 255;
- 
-    return ((uint32_t)c1 << 24) + ((uint32_t)c2 << 16) + ((uint32_t)c3 << 8) + c4;
-}
-
-void strtomd5(char* string, md5_state* target) {
-	char tmp[8];
-	
-	strncpy(tmp, string, 8);
-	target->a = byteswap(strtol(tmp, NULL, 16));
-	strncpy(tmp, string+8, 8);
-	target->b = byteswap(strtol(tmp, NULL, 16));
-	strncpy(tmp, string+16, 8);
-	target->c = byteswap(strtol(tmp, NULL, 16));
-	strncpy(tmp, string+24, 8);
-	target->d = byteswap(strtol(tmp, NULL, 16));
-}
 
 int main(int argc, char ** argv) {
 	char * input;
 	
+	char bytes_begin, bytes_end;
+	int bytes_base;
+
+	bytes_begin = 'A';
+	bytes_end   = 'G';
+
 	if (argc < 3) {
 		benchmark();
 	} else {
@@ -77,13 +67,13 @@ int main(int argc, char ** argv) {
 		
 		switch(argv[1][0]) {
 		case 'n':
-			ret = naive_search(target.a, target.b, target.c, target.d, 9);
+			ret = naive_search(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
 			break;
 		case 'c':
-			ret = cache_attack(target.a, target.b, target.c, target.d, 9);
+			ret = cache_attack(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
 			break;
 		case 'm':
-			ret = mitm_attack(target.a, target.b, target.c, target.d, 9);
+			ret = mitm_attack(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
 			break;
 		}
 	}

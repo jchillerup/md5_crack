@@ -1,15 +1,5 @@
-Write a "strategy loop" that iterates through everything in a sane way + adds padding.
-
-Use this strategy loop for the naive implementation, too, and allow it to cache m in the same memory.
-
 Optimize the naive implementation as much as possible so as to weed out any doubt that its slowness could come from other places than the extra rounds taken.
 
 Fix md5.c to avoid all the mallocs and use real types instead.
 
-Make md5.c more DRY
-
-We don't need to store the full state for the first chain, since much of it is given by MD5 spec, i.e. h0..h4
-
 Consider implementing exhaustive searches (possibly with different strategies) instead of passing the length to the attack function.
-
-Fix naive search.

@@ -10,7 +10,9 @@ typedef struct  {
 	uint32_t c;
 } md5_state_reduced;
 
-int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
+extern int get_candidate_word(char bytes_begin, int bytes_base, int strength);
+
+int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	//clock_t cl;
 	uint32_t *m;
 	uint8_t ba, bb, bc, bd;
@@ -18,31 +20,34 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	int fsize, bsize, i;
 	float online_time;
 	md5_state tmp;
+	int bytes_base;
 
 	/* These structures contain the forward and backward strands of MD5 calculation */
-	md5_state *backward_chain, *bptr;
 	md5_state_reduced  *forward_chain, *fptr;
+	md5_state *backward_chain, *bptr;
+	
+	bytes_base = bytes_end - bytes_begin + 1;
 
-	fsize = (int) pow(BYTES_BASE, 4);
-	bsize = (int) pow(BYTES_BASE, 1);
-
+	fsize = (int) pow(bytes_base, 4);
+	bsize = (int) pow(bytes_base, 1);
+	
 	/* Allocs, be sure to free these */
 	m = (uint32_t*) calloc(16, sizeof(uint32_t));
-
+	
+	m[14] = length*8;
+	
 	forward_chain  = (md5_state_reduced*) calloc(fsize, sizeof(md5_state_reduced));
-	backward_chain = (md5_state*) calloc(bsize, sizeof(md5_state));
+	backward_chain = (md5_state*)         calloc(bsize, sizeof(md5_state));
 
 	online_time = 0;
-	m1num = (int) pow(BYTES_BASE, 4);
+	m1num = (int) pow(bytes_base, 4);
 	for (m1cnt = 0; m1cnt < m1num; m1cnt++) {
 
-		m[1] = get_candidate_word(m1cnt);
-
-		m[14] = length*8;
+		m[1] = get_candidate_word(bytes_begin, bytes_base, m1cnt);
 
 		// BACKWARD CHAIN
 		bptr = backward_chain;
-		for  (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
+		for  (ba = bytes_begin; ba <= bytes_end; ba++) {
 			m[2] = 0x00008000 | ba;
 
 			bptr->a = a - h0;
@@ -57,38 +62,34 @@ int  mitm_attack(uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 
 		// FORWARD CHAIN
 		fptr = forward_chain;
-		for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
-			for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
-				for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
-					for (bd = BYTES_BEGIN; bd <= BYTES_END; bd++) {
-						m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
+		for (ba = bytes_begin; ba <= bytes_end; ba++) {
+		for (bb = bytes_begin; bb <= bytes_end; bb++) {
+		for (bc = bytes_begin; bc <= bytes_end; bc++) {
+		for (bd = bytes_begin; bd <= bytes_end; bd++) {
+			m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
+			
+			md5_truncated(&tmp, m, 1);
 
-						md5_truncated(&tmp, m, 1);
+			fptr->b = tmp.b;
+			fptr->c = tmp.c;
 
-						fptr->b = tmp.b;
-						fptr->c = tmp.c;
-
-						fptr++;
-					}
-				}
-				
-			}
-		}
+			fptr++;
+		}}}}
 		
 		// ONLINE PHASE
 		bptr = backward_chain;
 		for(bptr = backward_chain; bptr < (backward_chain + bsize); bptr++) {
 			md5_state tmp;
-			m[2] = 0x00008000 | (BYTES_BEGIN + (bptr - backward_chain));
+			m[2] = 0x00008000 | (bytes_begin + (bptr - backward_chain));
 
 			// So we have the value for this particular value for m2. Check
 			// if it matches a value from m0:
 			fptr = forward_chain; 
 			
-			for (ba = BYTES_BEGIN; ba <= BYTES_END; ba++) {
-			for (bb = BYTES_BEGIN; bb <= BYTES_END; bb++) {
-			for (bc = BYTES_BEGIN; bc <= BYTES_END; bc++) {
-			for (bd = BYTES_BEGIN; bd <= BYTES_END; bd++) {
+			for (ba = bytes_begin; ba <= bytes_end; ba++) {
+			for (bb = bytes_begin; bb <= bytes_end; bb++) {
+			for (bc = bytes_begin; bc <= bytes_end; bc++) {
+			for (bd = bytes_begin; bd <= bytes_end; bd++) {
 				tmp.a = bptr->a;
 				tmp.b = bptr->b;
 				tmp.c = bptr->c;

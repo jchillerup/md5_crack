@@ -163,8 +163,6 @@ void md5_truncated(md5_state* state_ptr, uint32_t * m, int stop_after_round)
 
 }
 
-
-
 uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
 	uint32_t f_val;
 	
@@ -266,6 +264,7 @@ void md5_64to48_fast(md5_state* s, uint32_t * m) {
 	b = s->b;
 	c = s->c;
 	d = s->d;
+
 	b = md5_round_backwards_noswap(a, b, c, d, m, 63); /* state: b c d a*/
 	c = md5_round_backwards_noswap(b, c, d, a, m, 62); /* state: c d a b*/
 	d = md5_round_backwards_noswap(c, d, a, b, m, 61); /* state: d a b c*/
@@ -290,7 +289,11 @@ void md5_64to48_fast(md5_state* s, uint32_t * m) {
 
 void md5_48to1_fast(md5_state* s, uint32_t * m) {
 	register uint32_t a, b, c, d;
-	a = s->b; b = s->c; c = s->d; d = s->a;
+	a = s->b;
+	b = s->c;
+	c = s->d;
+	d = s->a;
+
 	a = md5_round_backwards_noswap(d, a, b, c, m, 48); /* state: a b c d*/
 	b = md5_round_backwards_noswap(a, b, c, d, m, 47); /* state: b c d a*/
 	c = md5_round_backwards_noswap(b, c, d, a, m, 46); /* state: c d a b*/
