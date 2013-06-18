@@ -77,15 +77,18 @@ int main(int argc, char ** argv) {
 		switch(argv[1][0]) {
 		case 'n':
 			ret = naive_search(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
+                        printf("%d", ret);
 			break;
 		case 'c':
 			ret = cache_attack(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
+                        printf("%d", ret);
 			break;
 		case 'm':
 			ret = mitm_attack(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
+                        printf("%d", ret);
 			break;
 		}
-		printf("%d", ret);
+
 	}
 	
 	return(EXIT_SUCCESS);
