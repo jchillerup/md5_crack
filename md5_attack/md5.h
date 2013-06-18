@@ -19,7 +19,7 @@ typedef struct  {
 #define MD5_STATE_STRUCT
 #endif
 
-
+#define MAYBE_INLINE 
 
 void      md5_round          (md5_state *state_ptr, uint32_t* m, int r);
 void      md5_round_backwards(md5_state *state_ptr, uint32_t* m, int r);

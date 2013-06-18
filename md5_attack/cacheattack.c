@@ -5,7 +5,7 @@
 
 extern int get_candidate_word(char bytes_begin, int bytes_base, int strength);
 
-int  cache_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
+MAYBE_INLINE int  cache_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	md5_state target, tmp;
 	uint32_t *m;
 	int m1cnt, m1num ;

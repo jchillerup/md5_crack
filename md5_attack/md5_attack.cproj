@@ -23,8 +23,10 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeBuild" />
+        <Command type="Custom" />
       </CustomCommands>
     </CustomCommands>
+    <ExtraLinkerArguments>-lm</ExtraLinkerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
@@ -38,6 +40,12 @@
         <Command type="Build" />
       </CustomCommands>
     </CustomCommands>
+    <Libs>
+      <Libs>
+        <Lib>-lm</Lib>
+      </Libs>
+    </Libs>
+    <ExtraLinkerArguments>-lm</ExtraLinkerArguments>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="main.c" />
@@ -57,5 +65,29 @@
     <None Include="md5_attack.cbp" />
     <None Include="md5_attack.depend" />
     <None Include="md5_attack.layout" />
+    <None Include="hvad" />
+    <None Include="test" />
+    <None Include="test-avx" />
+    <None Include="test-avx-i" />
+    <None Include="test2" />
+    <None Include="Release\CL.read.1.tlog" />
+    <None Include="Release\CL.write.1.tlog" />
+    <None Include="Release\cacheattack.obj" />
+    <None Include="Release\cl.command.1.tlog" />
+    <None Include="Release\common.obj" />
+    <None Include="Release\link.command.1.tlog" />
+    <None Include="Release\link.read.1.tlog" />
+    <None Include="Release\link.write.1.tlog" />
+    <None Include="Release\main.obj" />
+    <None Include="Release\md5.obj" />
+    <None Include="Release\md5_attack.exe.intermediate.manifest" />
+    <None Include="Release\md5_attack.lastbuildstate" />
+    <None Include="Release\md5_attack.log" />
+    <None Include="Release\md5_attack.write.1.tlog" />
+    <None Include="Release\mitmattack.obj" />
+    <None Include="Release\mt.command.1.tlog" />
+    <None Include="Release\mt.read.1.tlog" />
+    <None Include="Release\mt.write.1.tlog" />
+    <None Include="Release\naivesearch.obj" />
   </ItemGroup>
 </Project>

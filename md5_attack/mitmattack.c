@@ -3,7 +3,6 @@
 #include <math.h>
 #include <assert.h>
 #include "md5.h"
-#include <time.h>
 
 typedef struct  {
 	uint32_t b;
@@ -12,7 +11,7 @@ typedef struct  {
 
 extern int get_candidate_word(char bytes_begin, int bytes_base, int strength);
 
-int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
+MAYBE_INLINE int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
 	//clock_t cl;
 	uint32_t *m;
 	uint8_t ba, bb, bc, bd;
