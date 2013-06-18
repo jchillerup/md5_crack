@@ -3,7 +3,6 @@
 #include "md5.h"
 #include <math.h>
 
-
 extern int get_candidate_word(char bytes_begin, int bytes_base, int strength);
 
 int  cache_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
@@ -15,18 +14,17 @@ int  cache_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint
 	int i;
 	int bytes_base;
 	
-	bytes_base  = bytes_end - bytes_begin + 1;
+	bytes_base = bytes_end - bytes_begin + 1;
 
 	/* Initialize the message data structure. */
 	m = (uint32_t *) calloc(16, sizeof(uint32_t));
-	
+	m[14] = length*8;
+
 	m1num = (int) pow(bytes_base, 4);
 	for (m1cnt = 0; m1cnt < m1num; m1cnt++) {	
 		m[1] = get_candidate_word(bytes_begin, bytes_base, m1cnt);
 
 		for (b9 = bytes_begin; b9 <= bytes_end; b9++) {
-			float percentage_done = 100* ((float) b9 - bytes_begin) / bytes_base;
-
 			/* Reset the target */
 			target.a = a - h0;
 			target.b = b - h1;
@@ -35,9 +33,6 @@ int  cache_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint
 
 			/* Fix some m2 */
 			m[2] = 0x00008000 | b9;
-
-			/* Define the length of the message. */
-			m[14] = length*8;
 
 			/* Calculate backwards and store the result */
 			/* (note that m[0] is not of any importance during these calculations) */
@@ -48,28 +43,24 @@ int  cache_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint
 
 			/* Iterate over all m0s */
 			for (b1 = bytes_begin; b1 <= bytes_end; b1++) {
+			for (b2 = bytes_begin; b2 <= bytes_end; b2++) {
+			for (b3 = bytes_begin; b3 <= bytes_end; b3++) {
+			for (b4 = bytes_begin; b4 <= bytes_end; b4++) {
 
-				for (b2 = bytes_begin; b2 <= bytes_end; b2++) {
-					for (b3 = bytes_begin; b3 <= bytes_end; b3++) {
-						for (b4 = bytes_begin; b4 <= bytes_end; b4++) {
-						
-							/* Establish current m0 */
-							m[0] = b4 << 24 | b3 << 16 | b2 << 8 | b1;
+				/* Establish current m0 */
+				m[0] = b4 << 24 | b3 << 16 | b2 << 8 | b1;
 
-							/* Calculate forward until after round 48 */
-							md5_0to48_fast(&tmp, m);
+				/* Calculate forward until after round 48 */
+				md5_0to48_fast(&tmp, m);
 
-							if (target.a == tmp.a &&
-								target.b == tmp.b &&
-								target.c == tmp.c &&
-								target.d == tmp.d) {
-									free(m);
-									return TRUE;
-							}
-						}
-					}
+				if (target.a == tmp.a &&
+					target.b == tmp.b &&
+					target.c == tmp.c &&
+					target.d == tmp.d) {
+						free(m);
+						return TRUE;
 				}
-			}
+			}}}}
 		}
 	}
 	free(m);

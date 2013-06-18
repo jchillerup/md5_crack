@@ -30,10 +30,10 @@ void benchmark() {
 
 	char bytes_begin = 'A';
 	char bytes_end   = 'G';
-	int bytes_base   = bytes_end - bytes_begin;
+	int  bytes_base   = bytes_end - bytes_begin;
 
 	input = (char*) calloc(11, sizeof(char));
-	get_candidate(bytes_begin, bytes_base, 10, input);
+	get_candidate(bytes_begin, bytes_base, 450, input);
 
 	printf("Benchmarking with password: %s\n", input);
 
@@ -58,13 +58,20 @@ int main(int argc, char ** argv) {
 
 	if (argc < 3) {
 		benchmark();
+#ifdef _WIN32
+		scanf("%d", &input);
+#endif
+
 	} else {
 		clock_t cl;
 		int ret;
 		md5_state target;
 		
-		strtomd5(argv[2], &target);
+		strtomd5(argv[4], &target);
 		
+		bytes_begin = argv[2][0];
+		bytes_end   = argv[3][0];
+
 		switch(argv[1][0]) {
 		case 'n':
 			ret = naive_search(bytes_begin, bytes_end, target.a, target.b, target.c, target.d, 9);
@@ -78,9 +85,6 @@ int main(int argc, char ** argv) {
 		}
 	}
 	
-#ifdef _WIN32
-	scanf("%d", &input);
-#endif
 
 	return(EXIT_SUCCESS);
 }

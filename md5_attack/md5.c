@@ -83,8 +83,6 @@ void md5_round(md5_state *state_ptr, uint32_t* m, int r) {
 	
 	state_ptr->b = new_b + (state_ptr->c);
 }
-
-
 void md5_round_backwards(md5_state *state_ptr, uint32_t* m, int r) {
 	uint32_t f_val;
 	uint32_t new_a;
@@ -348,3 +346,81 @@ void md5_48to1_fast(md5_state* s, uint32_t * m) {
 	s->d = b;
 }
 
+void md5_0to64_fast(md5_state* s, uint32_t * m) {
+	register uint32_t a, b, c, d;
+	
+	a = h0;
+	b = h1;
+	c = h2;
+	d = h3;
+
+	a = md5_round_noswap(a, b, c, d, m, 0); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 1); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 2); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 3); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 4); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 5); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 6); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 7); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 8); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 9); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 10); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 11); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 12); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 13); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 14); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 15); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 16); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 17); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 18); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 19); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 20); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 21); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 22); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 23); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 24); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 25); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 26); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 27); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 28); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 29); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 30); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 31); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 32); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 33); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 34); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 35); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 36); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 37); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 38); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 39); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 40); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 41); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 42); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 43); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 44); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 45); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 46); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 47); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 48); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 49); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 50); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 51); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 52); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 53); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 54); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 55); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 56); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 57); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 58); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 59); /* state: a b c d*/
+	a = md5_round_noswap(a, b, c, d, m, 60); /* state: d a b c*/
+	d = md5_round_noswap(d, a, b, c, m, 61); /* state: c d a b*/
+	c = md5_round_noswap(c, d, a, b, m, 62); /* state: b c d a*/
+	b = md5_round_noswap(b, c, d, a, m, 63); /* state: a b c d*/
+
+	s->a = a;
+	s->b = b;
+	s->c = c;
+	s->d = d;
+}
