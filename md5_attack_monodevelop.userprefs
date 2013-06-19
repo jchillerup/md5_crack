@@ -1,17 +1,20 @@
 ﻿<Properties GitUserInfo="UsingGIT">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/mitmattack.c">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/md5.h">
     <Files>
       <File FileName="md5_attack/main.c" Line="1" Column="1" />
-      <File FileName="md5_attack/md5.c" Line="1" Column="1" />
-      <File FileName="md5_attack/mitmattack.c" Line="42" Column="1" />
-      <File FileName="md5_attack/naivesearch.c" Line="1" Column="1" />
-      <File FileName="md5_attack/cacheattack.c" Line="1" Column="1" />
+      <File FileName="md5_attack/md5.c" Line="179" Column="8" />
+      <File FileName="md5_attack/mitmattack.c" Line="14" Column="14" />
+      <File FileName="md5_attack/naivesearch.c" Line="8" Column="14" />
+      <File FileName="md5_attack/cacheattack.c" Line="8" Column="13" />
+      <File FileName="md5_attack/md5.h" Line="22" Column="22" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="md5_attack" expanded="True" selected="True" />
+          <Node name="md5_attack" expanded="True">
+            <Node name="md5.h" selected="True" />
+          </Node>
         </State>
       </Pad>
     </Pads>
