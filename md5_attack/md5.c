@@ -161,7 +161,7 @@ void md5_truncated(md5_state* state_ptr, uint32_t * m, int stop_after_round)
 
 }
 
-inline uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
+__inline uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
 	uint32_t f_val;
 	
 	if      (r < 16) f_val = F(b, c, d);
@@ -176,7 +176,7 @@ inline uint32_t md5_round_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t 
 	return a;
 }
 
-inline uint32_t md5_round_backwards_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
+__inline uint32_t md5_round_backwards_noswap(uint32_t a,  uint32_t b, uint32_t c,  uint32_t d, uint32_t *m, int r) {
 	uint32_t f_val, new_b;
 	
 	if      (r < 16) f_val = F(c, d, a);

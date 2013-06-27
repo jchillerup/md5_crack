@@ -33,7 +33,7 @@ void benchmark() {
 	int  bytes_base   = bytes_end - bytes_begin;
 
 	input = (char*) calloc(11, sizeof(char));
-	get_candidate(bytes_begin, bytes_base, 450, input);
+	get_candidate(bytes_begin, bytes_base, 200, input);
 
 	printf("Benchmarking with password: %s\n", input);
 
