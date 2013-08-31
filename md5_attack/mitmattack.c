@@ -4,11 +4,6 @@
 #include <assert.h>
 #include "md5.h"
 
-typedef struct  {
-	uint32_t b;
-	uint32_t c;
-} md5_state_reduced;
-
 extern int get_candidate_word(char bytes_begin, int bytes_base, int strength);
 
 MAYBE_INLINE int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint32_t b, uint32_t c, uint32_t d, int length) {
@@ -95,12 +90,11 @@ MAYBE_INLINE int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint
 				tmp.d = bptr->d;
 
 				m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
-				md5_48to1_fast(&tmp, m);
-
-				if (tmp.a == 0x98badcfe && tmp.b == fptr->b && tmp.c == fptr->c && tmp.d == 0xefcdab89) {
+				
+				if (md5_48to1_fast_smart(&tmp, m, fptr) == TRUE) {
 					return TRUE;
 				}
-					
+	
 				fptr++;
 			}}}}	
 

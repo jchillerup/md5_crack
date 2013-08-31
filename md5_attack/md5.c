@@ -346,6 +346,80 @@ void md5_48to1_fast(md5_state* s, uint32_t * m) {
 	s->d = b;
 }
 
+int md5_48to1_fast_smart(md5_state* s, uint32_t * m, md5_state_reduced* target) {
+	register uint32_t a, b, c, d;
+	a = s->b;
+	b = s->c;
+	c = s->d;
+	d = s->a;
+
+	a = md5_round_backwards_noswap(d, a, b, c, m, 48); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 47); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 46); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 45); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 44); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 43); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 42); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 41); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 40); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 39); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 38); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 37); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 36); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 35); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 34); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 33); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 32); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 31); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 30); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 29); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 28); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 27); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 26); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 25); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 24); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 23); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 22); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 21); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 20); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 19); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 18); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 17); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 16); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 15); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 14); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 13); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 12); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 11); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 10); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 9); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 8); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 7); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 6); /* state: c d a b*/
+	
+	d = md5_round_backwards_noswap(c, d, a, b, m, 5); /* state: d a b c*/
+	if (d != target->b) {
+		return FALSE;
+	} 
+	
+	a = md5_round_backwards_noswap(d, a, b, c, m, 4); /* state: a b c d*/
+	if (a != target->c) {
+		return FALSE;
+	}
+	
+	b = md5_round_backwards_noswap(a, b, c, d, m, 3); /* state: b c d a*/
+	if (b != 0xefcdab89) {
+		return FALSE;
+	}
+	
+	c = md5_round_backwards_noswap(b, c, d, a, m, 2); /* state: c d a b*/
+	if (c != 0x98badcfe) {
+		return FALSE;
+	}
+	
+	return TRUE;
+}
+
 void md5_0to64_fast(md5_state* s, uint32_t * m) {
 	register uint32_t a, b, c, d;
 	

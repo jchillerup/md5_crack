@@ -19,6 +19,14 @@ typedef struct  {
 #define MD5_STATE_STRUCT
 #endif
 
+#ifndef MD5_REDUCED_STATE_STRUCT
+typedef struct  {
+	uint32_t b;
+	uint32_t c;
+} md5_state_reduced;
+#define MD5_REDUCED_STATE_STRUCT
+#endif
+
 #define MAYBE_INLINE 
 
 void      md5_round          (md5_state *state_ptr, uint32_t* m, int r);

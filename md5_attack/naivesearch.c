@@ -1,4 +1,4 @@
-#include <stdio.h>
+ #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "md5.h"
@@ -11,7 +11,7 @@ MAYBE_INLINE int  naive_search(char bytes_begin, char bytes_end, uint32_t a, uin
 	int m1cnt, m1num ;
 	uint8_t b1, b2, b3, b4;
 	uint8_t b9;
-	int bytes_base;
+	int bytes_base, i;
 
 	i = 0;
 	bytes_base = bytes_end - bytes_begin + 1;
