@@ -398,24 +398,16 @@ int md5_48to1_fast_smart(md5_state* s, uint32_t * m, md5_state_reduced* target) 
 	c = md5_round_backwards_noswap(b, c, d, a, m, 6); /* state: c d a b*/
 	
 	d = md5_round_backwards_noswap(c, d, a, b, m, 5); /* state: d a b c*/
-	if (d != target->b) {
-		return FALSE;
-	} 
+	if (d != target->b) return FALSE;
 	
 	a = md5_round_backwards_noswap(d, a, b, c, m, 4); /* state: a b c d*/
-	if (a != target->c) {
-		return FALSE;
-	}
+	if (a != target->c) return FALSE;
 	
 	b = md5_round_backwards_noswap(a, b, c, d, m, 3); /* state: b c d a*/
-	if (b != 0xefcdab89) {
-		return FALSE;
-	}
+	if (b != 0xefcdab89) return FALSE;
 	
 	c = md5_round_backwards_noswap(b, c, d, a, m, 2); /* state: c d a b*/
-	if (c != 0x98badcfe) {
-		return FALSE;
-	}
+	if (c != 0x98badcfe) return FALSE;
 	
 	return TRUE;
 }
