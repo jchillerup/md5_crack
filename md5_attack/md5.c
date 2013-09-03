@@ -184,7 +184,7 @@ __inline uint32_t md5_round_backwards_noswap(uint32_t a,  uint32_t b, uint32_t c
 	else if (r < 48) f_val = H(c, d, a);
 	else             f_val = I(c, d, a);
 	
-	new_b = b - c;
+	new_b = b - c;	
 	ROTATE_RIGHT(new_b, s[r]);
 	new_b -= f_val + k[r] + m[m_idx[r]]; /* The additions are because of the -= */
 	
@@ -255,13 +255,13 @@ void md5_0to48_fast(md5_state* s, uint32_t * m) {
 	s->b = a;
 }
 
-void md5_64to48_fast(md5_state* s, uint32_t * m) {
+void md5_64to48_fast_smart(md5_state* st, uint32_t * m) {
 	register uint32_t a, b, c, d;
 	
-	a = s->a;
-	b = s->b;
-	c = s->c;
-	d = s->d;
+	a = st->a;
+	b = st->b;
+	c = st->c;
+	d = st->d;
 
 	b = md5_round_backwards_noswap(a, b, c, d, m, 63); /* state: b c d a*/
 	c = md5_round_backwards_noswap(b, c, d, a, m, 62); /* state: c d a b*/
@@ -279,10 +279,44 @@ void md5_64to48_fast(md5_state* s, uint32_t * m) {
 	c = md5_round_backwards_noswap(b, c, d, a, m, 50); /* state: c d a b*/
 	d = md5_round_backwards_noswap(c, d, a, b, m, 49); /* state: d a b c*/
 	
-	s->a = d;
-	s->b = a;
-	s->c = b;
-	s->d = c;
+	a -= b;
+	ROTATE_RIGHT(a, 6);	
+	a -= I(b,c,d) + k[48];
+	
+	st->a = d;
+	st->b = a;
+	st->c = b;
+	st->d = c;
+}
+
+void md5_64to48_fast(md5_state* st, uint32_t * m) {
+	register uint32_t a, b, c, d;
+	
+	a = st->a;
+	b = st->b;
+	c = st->c;
+	d = st->d;
+
+	b = md5_round_backwards_noswap(a, b, c, d, m, 63); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 62); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 61); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 60); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 59); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 58); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 57); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 56); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 55); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 54); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 53); /* state: d a b c*/
+	a = md5_round_backwards_noswap(d, a, b, c, m, 52); /* state: a b c d*/
+	b = md5_round_backwards_noswap(a, b, c, d, m, 51); /* state: b c d a*/
+	c = md5_round_backwards_noswap(b, c, d, a, m, 50); /* state: c d a b*/
+	d = md5_round_backwards_noswap(c, d, a, b, m, 49); /* state: d a b c*/
+	
+	st->a = d;
+	st->b = a;
+	st->c = b;
+	st->d = c;
 }
 
 void md5_48to1_fast(md5_state* s, uint32_t * m) {
@@ -348,12 +382,23 @@ void md5_48to1_fast(md5_state* s, uint32_t * m) {
 
 int md5_48to1_fast_smart(md5_state* s, uint32_t * m, md5_state_reduced* target) {
 	register uint32_t a, b, c, d;
+	uint32_t tmp;
+	
+	//round 48 is mostly computed at this point
+
+	
 	a = s->b;
 	b = s->c;
 	c = s->d;
 	d = s->a;
 
-	a = md5_round_backwards_noswap(d, a, b, c, m, 48); /* state: a b c d*/
+	// rest of round 48 goes like this
+	// a -= b;
+	// ROTATE_RIGHT(a, 6);	
+	// a -= I(b,c,d) + k[48];
+	
+	a -= m[m_idx[48]];
+				
 	b = md5_round_backwards_noswap(a, b, c, d, m, 47); /* state: b c d a*/
 	c = md5_round_backwards_noswap(b, c, d, a, m, 46); /* state: c d a b*/
 	d = md5_round_backwards_noswap(c, d, a, b, m, 45); /* state: d a b c*/

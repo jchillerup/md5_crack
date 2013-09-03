@@ -49,8 +49,8 @@ MAYBE_INLINE int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint
 			bptr->c = c - h2;
 			bptr->d = d - h3;
 
-			md5_64to48_fast(bptr,m);
-
+			md5_64to48_fast_smart(bptr,m);
+			
 			bptr++;
 		}
 
@@ -90,7 +90,7 @@ MAYBE_INLINE int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint
 				tmp.d = bptr->d;
 
 				m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
-				
+			
 				if (md5_48to1_fast_smart(&tmp, m, fptr) == TRUE) {
 					return TRUE;
 				}
