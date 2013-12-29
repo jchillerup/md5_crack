@@ -1,10 +1,10 @@
 ﻿<Properties GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/md5.c">
+  <MonoDevelop.Ide.Workbench ActiveDocument="md5_attack/main.c">
     <Files>
-      <File FileName="md5_attack/main.c" Line="1" Column="1" />
-      <File FileName="md5_attack/md5.c" Line="367" Column="11" />
-      <File FileName="md5_attack/mitmattack.c" Line="54" Column="4" />
+      <File FileName="md5_attack/main.c" Line="47" Column="2" />
+      <File FileName="md5_attack/md5.c" Line="1" Column="1" />
+      <File FileName="md5_attack/mitmattack.c" Line="56" Column="1" />
       <File FileName="md5_attack/naivesearch.c" Line="1" Column="1" />
       <File FileName="md5_attack/cacheattack.c" Line="1" Column="1" />
       <File FileName="md5_attack/md5.h" Line="1" Column="1" />
@@ -13,7 +13,7 @@
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="md5_attack" expanded="True">
-            <Node name="md5.c" selected="True" />
+            <Node name="main.c" selected="True" />
           </Node>
         </State>
       </Pad>

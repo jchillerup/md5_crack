@@ -92,6 +92,7 @@ MAYBE_INLINE int  mitm_attack(char bytes_begin, char bytes_end, uint32_t a, uint
 				m[0] = bd << 24 | bc << 16 | bb << 8 | ba;
 			
 				if (md5_48to1_fast_smart(&tmp, m, fptr) == TRUE) {
+					printf("%s\n", m);
 					return TRUE;
 				}
 	
